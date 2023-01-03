@@ -8,7 +8,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>io.damus.nostr</string>
+			<string>app.vinux.nostr</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>nostr</string>
