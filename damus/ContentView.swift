@@ -17,6 +17,7 @@ var BOOTSTRAP_RELAYS = [
     "wss://nostr.oxtr.dev",
     "wss://nostr.v0l.io",
     "wss://nostr-2.zebedee.cloud",
+    "http://localhost:7000"
 ]
 
 struct TimestampedProfile {
