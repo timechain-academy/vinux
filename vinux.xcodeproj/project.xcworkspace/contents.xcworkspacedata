@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Volumes/DeepSpaceExtSDD/damus/vinux.nostr.xcodeproj">
+      location = "self:/Volumes/DeepSpaceExtSDD/damus/vinux.xcodeproj">
    </FileRef>
 </Workspace>

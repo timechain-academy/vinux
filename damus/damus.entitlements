@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)com.jb55.damus2</string>
+		<string>$(AppIdentifierPrefix)app.vinux.nostr</string>
 	</array>
 </dict>
 </plist>

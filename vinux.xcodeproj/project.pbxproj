@@ -303,14 +303,14 @@
 		4CE4F9DD2852768D00C00DD9 /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
 		4CE4F9E0285287B800C00DD9 /* TextFieldAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldAlert.swift; sourceTree = "<group>"; };
 		4CE4F9E228528C5200C00DD9 /* AddRelayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRelayView.swift; sourceTree = "<group>"; };
-		4CE6DEE327F7A08100C66700 /* vinux.nostr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = vinux.nostr.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CE6DEE327F7A08100C66700 /* vinux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = vinux.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CE6DEE627F7A08100C66700 /* damusApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = damusApp.swift; sourceTree = "<group>"; };
 		4CE6DEE827F7A08100C66700 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4CE6DEEA27F7A08200C66700 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4CE6DEED27F7A08200C66700 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		4CE6DEF327F7A08200C66700 /* vinux.nostrTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = vinux.nostrTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CE6DEF327F7A08200C66700 /* vinuxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = vinuxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CE6DEF727F7A08200C66700 /* damusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = damusTests.swift; sourceTree = "<group>"; };
-		4CE6DEFD27F7A08200C66700 /* vinux.nostrUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = vinux.nostrUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CE6DEFD27F7A08200C66700 /* vinuxUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = vinuxUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CE6DF0127F7A08200C66700 /* damusUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = damusUITests.swift; sourceTree = "<group>"; };
 		4CE6DF0327F7A08200C66700 /* damusUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = damusUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		4CE6DF1527F8DEBF00C66700 /* RelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayConnection.swift; sourceTree = "<group>"; };
@@ -572,9 +572,9 @@
 		4CE6DEE427F7A08100C66700 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4CE6DEE327F7A08100C66700 /* vinux.nostr.app */,
-				4CE6DEF327F7A08200C66700 /* vinux.nostrTests.xctest */,
-				4CE6DEFD27F7A08200C66700 /* vinux.nostrUITests.xctest */,
+				4CE6DEE327F7A08100C66700 /* vinux.app */,
+				4CE6DEF327F7A08200C66700 /* vinuxTests.xctest */,
+				4CE6DEFD27F7A08200C66700 /* vinuxUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -638,9 +638,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		4CE6DEE227F7A08100C66700 /* vinux.nostr */ = {
+		4CE6DEE227F7A08100C66700 /* vinux */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4CE6DF0727F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinux.nostr" */;
+			buildConfigurationList = 4CE6DF0727F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinux" */;
 			buildPhases = (
 				4CE6DEDF27F7A08100C66700 /* Sources */,
 				4CE6DEE027F7A08100C66700 /* Frameworks */,
@@ -650,7 +650,7 @@
 			);
 			dependencies = (
 			);
-			name = vinux.nostr;
+			name = vinux;
 			packageProductDependencies = (
 				4CE6DF1127F7A2B300C66700 /* Starscream */,
 				4C649880286E0EE300EAE2B3 /* secp256k1 */,
@@ -658,12 +658,12 @@
 				6C7DE41E2955169800E66263 /* Vault */,
 			);
 			productName = damus;
-			productReference = 4CE6DEE327F7A08100C66700 /* vinux.nostr.app */;
+			productReference = 4CE6DEE327F7A08100C66700 /* vinux.app */;
 			productType = "com.apple.product-type.application";
 		};
-		4CE6DEF227F7A08200C66700 /* vinux.nostrTests */ = {
+		4CE6DEF227F7A08200C66700 /* vinuxTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4CE6DF0A27F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinux.nostrTests" */;
+			buildConfigurationList = 4CE6DF0A27F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinuxTests" */;
 			buildPhases = (
 				4CE6DEEF27F7A08200C66700 /* Sources */,
 				4CE6DEF027F7A08200C66700 /* Frameworks */,
@@ -674,14 +674,14 @@
 			dependencies = (
 				4CE6DEF527F7A08200C66700 /* PBXTargetDependency */,
 			);
-			name = vinux.nostrTests;
+			name = vinuxTests;
 			productName = damusTests;
-			productReference = 4CE6DEF327F7A08200C66700 /* vinux.nostrTests.xctest */;
+			productReference = 4CE6DEF327F7A08200C66700 /* vinuxTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		4CE6DEFC27F7A08200C66700 /* vinux.nostrUITests */ = {
+		4CE6DEFC27F7A08200C66700 /* vinuxUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4CE6DF0D27F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinux.nostrUITests" */;
+			buildConfigurationList = 4CE6DF0D27F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinuxUITests" */;
 			buildPhases = (
 				4CE6DEF927F7A08200C66700 /* Sources */,
 				4CE6DEFA27F7A08200C66700 /* Frameworks */,
@@ -692,9 +692,9 @@
 			dependencies = (
 				4CE6DEFF27F7A08200C66700 /* PBXTargetDependency */,
 			);
-			name = vinux.nostrUITests;
+			name = vinuxUITests;
 			productName = damusUITests;
-			productReference = 4CE6DEFD27F7A08200C66700 /* vinux.nostrUITests.xctest */;
+			productReference = 4CE6DEFD27F7A08200C66700 /* vinuxUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -721,7 +721,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 4CE6DEDE27F7A08100C66700 /* Build configuration list for PBXProject "vinux.nostr" */;
+			buildConfigurationList = 4CE6DEDE27F7A08100C66700 /* Build configuration list for PBXProject "vinux" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -741,9 +741,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				4CE6DEE227F7A08100C66700 /* vinux.nostr */,
-				4CE6DEF227F7A08200C66700 /* vinux.nostrTests */,
-				4CE6DEFC27F7A08200C66700 /* vinux.nostrUITests */,
+				4CE6DEE227F7A08100C66700 /* vinux */,
+				4CE6DEF227F7A08200C66700 /* vinuxTests */,
+				4CE6DEFC27F7A08200C66700 /* vinuxUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -928,12 +928,12 @@
 /* Begin PBXTargetDependency section */
 		4CE6DEF527F7A08200C66700 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4CE6DEE227F7A08100C66700 /* vinux.nostr */;
+			target = 4CE6DEE227F7A08100C66700 /* vinux */;
 			targetProxy = 4CE6DEF427F7A08200C66700 /* PBXContainerItemProxy */;
 		};
 		4CE6DEFF27F7A08200C66700 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4CE6DEE227F7A08100C66700 /* vinux.nostr */;
+			target = 4CE6DEE227F7A08100C66700 /* vinux */;
 			targetProxy = 4CE6DEFE27F7A08200C66700 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1069,7 +1069,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = damus/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Damus;
+				INFOPLIST_KEY_CFBundleDisplayName = Vinux;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1084,7 +1084,7 @@
 					"$(PROJECT_DIR)",
 				);
 				MARKETING_VERSION = 0.1.8;
-				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.damus;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.nostr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "damus-c/damus-Bridging-Header.h";
@@ -1108,7 +1108,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = damus/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Damus;
+				INFOPLIST_KEY_CFBundleDisplayName = Vinux;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1123,7 +1123,7 @@
 					"$(PROJECT_DIR)",
 				);
 				MARKETING_VERSION = 0.1.8;
-				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.damus;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.nostr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "damus-c/damus-Bridging-Header.h";
@@ -1143,12 +1143,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.damusTests;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.nostrTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/vinux.nostr.app/vinux.nostr";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/vinux.app/vinux";
 			};
 			name = Debug;
 		};
@@ -1163,12 +1163,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.damusTests;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.nostrTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/vinux.nostr.app/vinux.nostr";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/vinux.app/vinux";
 			};
 			name = Release;
 		};
@@ -1181,7 +1181,7 @@
 				DEVELOPMENT_TEAM = M684FYCYG6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.damusUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.nostrUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -1199,7 +1199,7 @@
 				DEVELOPMENT_TEAM = M684FYCYG6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.damusUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vinux.nostrUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -1211,7 +1211,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4CE6DEDE27F7A08100C66700 /* Build configuration list for PBXProject "vinux.nostr" */ = {
+		4CE6DEDE27F7A08100C66700 /* Build configuration list for PBXProject "vinux" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4CE6DF0527F7A08200C66700 /* Debug */,
@@ -1220,7 +1220,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4CE6DF0727F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinux.nostr" */ = {
+		4CE6DF0727F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinux" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4CE6DF0827F7A08200C66700 /* Debug */,
@@ -1229,7 +1229,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4CE6DF0A27F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinux.nostrTests" */ = {
+		4CE6DF0A27F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinuxTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4CE6DF0B27F7A08200C66700 /* Debug */,
@@ -1238,7 +1238,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4CE6DF0D27F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinux.nostrUITests" */ = {
+		4CE6DF0D27F7A08200C66700 /* Build configuration list for PBXNativeTarget "vinuxUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4CE6DF0E27F7A08200C66700 /* Debug */,
