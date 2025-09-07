@@ -30,6 +30,22 @@ func render_note_content(ev: NostrEvent, profiles: Profiles, privkey: String?) -
             return str + mention_str(m, profiles: profiles)
         case .text(let txt):
             return str + txt
+        //case .repository_announcement(let txt):
+        //    return str + txt
+        //case .repository_state_announcement(let txt):
+        //    return str + txt
+        //case .repository_reply(let txt):
+        //    return str + txt
+        //case .repository_patch(let txt):
+        //    return str + txt
+        //case .repository_issue_open(let txt):
+        //    return str + txt
+        //case .repository_issue_applied(let txt):
+        //    return str + txt
+        //case .repository_issue_closed(let txt):
+        //    return str + txt
+        //case .repository_issue_draft(let txt):
+        //    return str + txt
         case .hashtag(let htag):
             return str + hashtag_str(htag)
         case .invoice(let invoice):
