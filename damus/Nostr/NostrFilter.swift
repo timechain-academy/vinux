@@ -42,6 +42,21 @@ struct NostrFilter: Codable {
         return filter_kinds([1])
     }
 
+    public static var filter_repo: NostrFilter {
+        return filter_kinds([
+            1,
+            NostrKind.repository_announcement.rawValue,// = 30617
+            NostrKind.repository_state_announcement.rawValue,// = 30618
+            //NostrKind.repository_reply.rawValue,// = 1111
+            NostrKind.repository_patch.rawValue,// = 1617
+            NostrKind.repository_issue_open.rawValue,// = 1630
+            NostrKind.repository_issue_applied.rawValue,// = 1631
+            NostrKind.repository_issue_closed.rawValue,// = 1632
+            NostrKind.repository_issue_draft.rawValue,// = 1633
+            
+        ])
+    }
+    
     public static var filter_profiles: NostrFilter {
         return filter_kinds([0])
     }

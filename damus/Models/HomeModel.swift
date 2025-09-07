@@ -283,7 +283,7 @@ class HomeModel: ObservableObject {
             //nip-34
             NostrKind.repository_announcement.rawValue,// = 30617
             NostrKind.repository_state_announcement.rawValue,// = 30618
-            NostrKind.repository_reply.rawValue,// = 1111
+            //NostrKind.repository_reply.rawValue,// = 1111
             NostrKind.repository_patch.rawValue,// = 1617
             NostrKind.repository_issue_open.rawValue,// = 1630
             NostrKind.repository_issue_applied.rawValue,// = 1631

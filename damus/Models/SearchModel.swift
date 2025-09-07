@@ -27,9 +27,9 @@ class SearchModel: ObservableObject {
         // since 1 month
         search.limit = self.limit
         search.kinds = [
-            1,
-            5,
-            7,
+            //1,
+            //5,
+            //7,
             NostrKind.repository_announcement.rawValue,// = 30617
             NostrKind.repository_state_announcement.rawValue,// = 30618
             NostrKind.repository_reply.rawValue,// = 1111
