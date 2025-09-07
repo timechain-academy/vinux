@@ -463,7 +463,7 @@ func is_notification(ev: NostrEvent, pubkey: String) -> Bool {
 }
 
 
-extension UINavigationController: UIGestureRecognizerDelegate {
+extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
     override open func viewDidLoad() {
         super.viewDidLoad()
         interactivePopGestureRecognizer?.delegate = self
