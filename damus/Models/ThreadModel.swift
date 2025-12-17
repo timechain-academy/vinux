@@ -188,11 +188,38 @@ class ThreadModel: ObservableObject {
             guard sid == base_subid || sid == profiles_subid else {
                 return
             }
-            
-            if ev.known_kind == .metadata {
+            //nip-34
+            if ev.known_kind ==
+                NostrKind.repository_announcement{// = 30617
+                self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            } else
+            if ev.known_kind == NostrKind.repository_state_announcement{// = 30618
+                self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            } else
+            if ev.known_kind == NostrKind.repository_reply{// = 1111
+                self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            } else
+            if ev.known_kind == NostrKind.repository_patch{// = 1617
+                self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            } else
+            if ev.known_kind == NostrKind.repository_issue_open{// = 1630
+                self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            } else
+            if ev.known_kind == NostrKind.repository_issue_applied{// = 1631
+                self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            } else
+            if ev.known_kind == NostrKind.repository_issue_closed{// = 1632
+                self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            } else
+            if ev.known_kind == NostrKind.repository_issue_draft{// = 1633
+                self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            //
+            } else if ev.known_kind == .metadata {
                 process_metadata_event(profiles: damus_state.profiles, ev: ev)
             } else if ev.is_textlike {
                 self.add_event(ev, privkey: self.damus_state.keypair.privkey)
+            } else if ev.known_kind == .channel_meta || ev.known_kind == .channel_create {
+                handle_channel_meta(ev)
             } else if ev.known_kind == .channel_meta || ev.known_kind == .channel_create {
                 handle_channel_meta(ev)
             }
