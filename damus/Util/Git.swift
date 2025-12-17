@@ -10,7 +10,7 @@ import MiniGit
 
 let documentURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 
-let localRepoLocation = documentURL.appendingPathComponent("gnostr")
+let localRepoLocation = documentURL.appendingPathComponent(".gnostr").appendingPathComponent("gnostr")
 
 let remoteRepoLocation = "https://github.com/gnostr-org/gnostr.git"
 
@@ -24,7 +24,7 @@ var credentialAdded = false
 func addCredential() {
     do {
         // TODO Change the info here
-        try credentialManager.addOrUpdate(nil, Credential(id: "MyGithub", kind: .password, targetURL: "https://github.com/YOUR_USERNAME/", userName: "YOUR_USERNAME", password: "YOUR_ACCESS_TOKEN"))
+        try credentialManager.addOrUpdate(nil, Credential(id: "gnostr-org", kind: .password, targetURL: "https://github.com/gnostr-org/", userName: "gnostr", password: "npub15d9enu3v0yxyud4jk0pvxk3kmvrzymjpc6f0eq4ck44vr32qck7smrxq6k"))
         credentialAdded = true
         print("Credential added.")
     } catch let error {
