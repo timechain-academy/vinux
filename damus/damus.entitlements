@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)app.vinux.nostr</string>
+		<string>$(AppIdentifierPrefix)org.gnostr.gnostr</string>
 	</array>
 </dict>
 </plist>

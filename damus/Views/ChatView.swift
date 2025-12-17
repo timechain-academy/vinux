@@ -46,7 +46,7 @@ struct ChatView: View {
     }
     
     func prev_reply_is_same() -> String? {
-        return vinux.prev_reply_is_same(event: event, prev_ev: prev_ev, replies: thread.replies)
+        return gnostr.prev_reply_is_same(event: event, prev_ev: prev_ev, replies: thread.replies)
     }
     
     func reply_is_new() -> String? {
