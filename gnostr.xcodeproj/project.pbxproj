@@ -1057,7 +1057,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = damus/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = gnostr;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1074,11 +1074,11 @@
 				MARKETING_VERSION = 0.1.8;
 				PRODUCT_BUNDLE_IDENTIFIER = org.gnostr.gnostr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "damus-c/damus-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Debug;
@@ -1097,7 +1097,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = damus/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = gnostr;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1114,10 +1114,10 @@
 				MARKETING_VERSION = 0.1.8;
 				PRODUCT_BUNDLE_IDENTIFIER = org.gnostr.gnostr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "damus-c/damus-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Release;
