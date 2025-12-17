@@ -107,6 +107,22 @@ class HomeModel: ObservableObject {
             handle_channel_create(ev)
         case .channel_meta:
             handle_channel_meta(ev)
+        case .repository_announcement:
+            handle_text_event(sub_id: sub_id, ev)
+        case .repository_state_announcement:
+            handle_text_event(sub_id: sub_id, ev)
+        case .repository_reply:
+            handle_text_event(sub_id: sub_id, ev)
+        case .repository_patch:
+            handle_text_event(sub_id: sub_id, ev)
+        case .repository_issue_open:
+            handle_text_event(sub_id: sub_id, ev)
+        case .repository_issue_applied:
+            handle_text_event(sub_id: sub_id, ev)
+        case .repository_issue_closed:
+            handle_text_event(sub_id: sub_id, ev)
+        case .repository_issue_draft:
+            handle_text_event(sub_id: sub_id, ev)
         }
     }
     
@@ -260,8 +276,21 @@ class HomeModel: ObservableObject {
 
         var contacts_filter = NostrFilter.filter_kinds([0])
         contacts_filter.authors = friends
-        
-        var our_contacts_filter = NostrFilter.filter_kinds([3, 0])
+
+        var our_contacts_filter = NostrFilter.filter_kinds([
+            3,
+            0,
+            //nip-34
+            NostrKind.repository_announcement.rawValue,// = 30617
+            NostrKind.repository_state_announcement.rawValue,// = 30618
+            //NostrKind.repository_reply.rawValue,// = 1111
+            NostrKind.repository_patch.rawValue,// = 1617
+            NostrKind.repository_issue_open.rawValue,// = 1630
+            NostrKind.repository_issue_applied.rawValue,// = 1631
+            NostrKind.repository_issue_closed.rawValue,// = 1632
+            NostrKind.repository_issue_draft.rawValue,// = 1633
+
+        ])
         our_contacts_filter.authors = [damus_state.pubkey]
 
         var dms_filter = NostrFilter.filter_kinds([
@@ -280,20 +309,40 @@ class HomeModel: ObservableObject {
 
         // TODO: separate likes?
         var home_filter = NostrFilter.filter_kinds([
-            NostrKind.text.rawValue,
-            NostrKind.chat.rawValue,
-            NostrKind.like.rawValue,
-            NostrKind.boost.rawValue,
+            //NostrKind.text.rawValue,
+            //NostrKind.chat.rawValue,
+            //NostrKind.like.rawValue,
+            //NostrKind.boost.rawValue,
+            //nip-34
+            NostrKind.repository_announcement.rawValue,// = 30617
+            NostrKind.repository_state_announcement.rawValue,// = 30618
+            NostrKind.repository_reply.rawValue,// = 1111
+            NostrKind.repository_patch.rawValue,// = 1617
+            NostrKind.repository_issue_open.rawValue,// = 1630
+            NostrKind.repository_issue_applied.rawValue,// = 1631
+            NostrKind.repository_issue_closed.rawValue,// = 1632
+            NostrKind.repository_issue_draft.rawValue,// = 1633
+            //
+
         ])
         // include our pubkey as well even if we're not technically a friend
         home_filter.authors = friends
         home_filter.limit = 500
 
         var notifications_filter = NostrFilter.filter_kinds([
-            NostrKind.text.rawValue,
-            NostrKind.chat.rawValue,
-            NostrKind.like.rawValue,
-            NostrKind.boost.rawValue,
+            //NostrKind.text.rawValue,
+            //NostrKind.chat.rawValue,
+            //NostrKind.like.rawValue,
+            //NostrKind.boost.rawValue,
+            //nip-34
+            NostrKind.repository_announcement.rawValue,// = 30617
+            NostrKind.repository_state_announcement.rawValue,// = 30618
+            NostrKind.repository_reply.rawValue,// = 1111
+            NostrKind.repository_patch.rawValue,// = 1617
+            NostrKind.repository_issue_open.rawValue,// = 1630
+            NostrKind.repository_issue_applied.rawValue,// = 1631
+            NostrKind.repository_issue_closed.rawValue,// = 1632
+            NostrKind.repository_issue_draft.rawValue,// = 1633
         ])
         notifications_filter.pubkeys = [damus_state.pubkey]
         notifications_filter.limit = 100
