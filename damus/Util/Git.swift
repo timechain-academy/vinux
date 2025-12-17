@@ -112,4 +112,3 @@ struct GitView_Previews: PreviewProvider {
         GitView()
     }
 }
-

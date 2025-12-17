@@ -47,6 +47,7 @@ enum Block {
     case hashtag(String)
     case url(URL)
     case invoice(Invoice)
+    case repository_announcement(String)
     
     var is_invoice: Invoice? {
         if case .invoice(let invoice) = self {
@@ -98,6 +99,8 @@ func render_blocks(blocks: [Block]) -> String {
             return str + url.absoluteString
         case .invoice(let inv):
             return str + inv.string
+        case .repository_announcement(let txt):
+            return str + txt
         }
     }
 }

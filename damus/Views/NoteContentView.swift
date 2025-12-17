@@ -24,14 +24,15 @@ func render_note_content(ev: NostrEvent, profiles: Profiles, privkey: String?) -
     var invoices: [Invoice] = []
     var img_urls: [URL] = []
     var link_urls: [URL] = []
-    let txt = blocks.reduce("") { str, block in
+    var content: String = ""
+    for block in blocks {
         switch block {
         case .mention(let m):
-            return str + mention_str(m, profiles: profiles)
+            content += mention_str(m, profiles: profiles)
         case .text(let txt):
-            return str + txt
-        //case .repository_announcement(let txt):
-        //    return str + txt
+            content += txt
+        case .repository_announcement(let txt):
+            content += txt
         //case .repository_state_announcement(let txt):
         //    return str + txt
         //case .repository_reply(let txt):
@@ -47,10 +48,9 @@ func render_note_content(ev: NostrEvent, profiles: Profiles, privkey: String?) -
         //case .repository_issue_draft(let txt):
         //    return str + txt
         case .hashtag(let htag):
-            return str + hashtag_str(htag)
+            content += hashtag_str(htag)
         case .invoice(let invoice):
             invoices.append(invoice)
-            return str
         case .url(let url):
             
             // Handle Image URLs
@@ -60,12 +60,10 @@ func render_note_content(ev: NostrEvent, profiles: Profiles, privkey: String?) -
             } else {
                 link_urls.append(url)
             }
-            
-            return str
         }
     }
     
-    return NoteArtifacts(content: txt, images: img_urls, invoices: invoices, links: link_urls)
+    return NoteArtifacts(content: content, images: img_urls, invoices: invoices, links: link_urls)
 }
 
 func is_image_url(_ url: URL) -> Bool {
@@ -135,6 +133,8 @@ struct NoteContentView: View {
                     case .hashtag: return
                     case .url: return
                     case .invoice: return
+                    case .repository_announcement(_):
+                        self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)  
                     }
                 }
             }
