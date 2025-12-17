@@ -26,7 +26,19 @@ class SearchModel: ObservableObject {
     func subscribe() {
         // since 1 month
         search.limit = self.limit
-        search.kinds = [1,5,7]
+        search.kinds = [
+            //1,
+            //5,
+            //7,
+            NostrKind.repository_announcement.rawValue,// = 30617
+            NostrKind.repository_state_announcement.rawValue,// = 30618
+            NostrKind.repository_reply.rawValue,// = 1111
+            NostrKind.repository_patch.rawValue,// = 1617
+            NostrKind.repository_issue_open.rawValue,// = 1630
+            NostrKind.repository_issue_applied.rawValue,// = 1631
+            NostrKind.repository_issue_closed.rawValue,// = 1632
+            NostrKind.repository_issue_draft.rawValue// = 1633
+        ]
 
         //likes_filter.ids = ref_events.referenced_ids!
 
