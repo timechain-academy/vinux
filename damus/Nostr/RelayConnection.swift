@@ -133,6 +133,8 @@ func make_nostr_unsubscribe_req(_ sub_id: String) -> String? {
 
 func make_nostr_subscription_req(_ filters: [NostrFilter], sub_id: String) -> String? {
     let encoder = JSONEncoder()
+
+    //add nip-34
     var req = "[\"REQ\",\"\(sub_id)\""
     for filter in filters {
         req += ","
