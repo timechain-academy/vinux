@@ -29,17 +29,32 @@ struct NostrFilter: Codable {
         case authors
         case limit
     }
-    
+
     public static func copy(from: NostrFilter) -> NostrFilter {
         return NostrFilter(ids: from.ids, kinds: from.kinds, referenced_ids: from.referenced_ids, pubkeys: from.pubkeys, since: from.since, until: from.until, authors: from.authors, hashtag: from.hashtag)
     }
-    
+
     public static func filter_hashtag(_ htags: [String]) -> NostrFilter {
         return NostrFilter(ids: nil, kinds: nil, referenced_ids: nil, pubkeys: nil, since: nil, until: nil, authors: nil, hashtag: htags)
     }
 
     public static var filter_text: NostrFilter {
         return filter_kinds([1])
+    }
+
+    public static var filter_repo: NostrFilter {
+        return filter_kinds([
+            1,
+            NostrKind.repository_announcement.rawValue,// = 30617
+            NostrKind.repository_state_announcement.rawValue,// = 30618
+            //NostrKind.repository_reply.rawValue,// = 1111
+            NostrKind.repository_patch.rawValue,// = 1617
+            NostrKind.repository_issue_open.rawValue,// = 1630
+            NostrKind.repository_issue_applied.rawValue,// = 1631
+            NostrKind.repository_issue_closed.rawValue,// = 1632
+            NostrKind.repository_issue_draft.rawValue,// = 1633
+
+        ])
     }
 
     public static var filter_profiles: NostrFilter {
@@ -49,7 +64,7 @@ struct NostrFilter: Codable {
     public static var filter_contacts: NostrFilter {
         return filter_kinds([3])
     }
-    
+
     public static func filter_authors(_ authors: [String]) -> NostrFilter {
         return NostrFilter(ids: nil, kinds: nil, referenced_ids: nil, pubkeys: nil, since: nil, until: nil, authors: authors)
     }
