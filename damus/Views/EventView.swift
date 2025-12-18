@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import GnostrGit
 
 enum Highlight {
     case none
@@ -132,6 +133,7 @@ struct EventView: View {
 
     @EnvironmentObject var webViewURL: WebViewURL
     @EnvironmentObject var webViewModel: WebViewModel
+    @EnvironmentObject var gitOperationTracker: GitOperationTracker // Add this line
     @State private var repoToClone: (url: String, name: String)?
 
     init(event: NostrEvent, highlight: Highlight, has_action_bar: Bool, damus: DamusState, show_friend_icon: Bool, size: EventViewKind = .normal, embedded: Bool = false) {
@@ -261,7 +263,12 @@ struct EventView: View {
                         TagsView(tags: event.tags, onCloneTapped: { url in
                             let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
                             print("User tapped clone URL: \(url.absoluteString)")
-                            self.repoToClone = (url: url.absoluteString, name: repoName)
+                            self.webViewModel.repo_url = url.absoluteString
+                            self.webViewModel.repo_name = repoName
+                            let commitTags = event.tags.filter { $0.first == "commit" || $0.first == "parent-commit" }
+                            self.webViewModel.commitsToFetch = commitTags.compactMap { $0.count > 1 ? $0[1] : nil }
+                            self.webViewModel.clone() // Directly initiate clone from webViewModel
+                            self.webViewURL.url = url // Open the WebView where the actual clone button is
                                             }, onWebTapped: { url in
                                                 print("User tapped web URL: \(url.absoluteString)")
                                                 self.webViewURL.url = url
@@ -279,10 +286,10 @@ struct EventView: View {
                                             }, onDTapped: { d_tag in                            let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
                             if cloneURLs.count == 1 {
                                 let url = cloneURLs[0]
-                                print("User tapped d: tag, automatically selecting repository: \(url.absoluteString)")
-                                self.repoToClone = (url: url.absoluteString, name: d_tag)
+                                print("User tapped d: tag, automatically cloning repository: \(url.absoluteString)")
+                                self.gitOperationTracker.startGitOperation(repo_url: url.absoluteString, repo_name: d_tag, commitsToFetch: [])
                             } else {
-                                print("User tapped d: tag, but there are \(cloneURLs.count) clone URLs. Please select a specific clone URL.")
+                                print("User tapped d: tag, but there are \(cloneURLs.count) clone URLs. Cannot automatically clone. Please select a specific clone URL.")
                             }
                         })
                         

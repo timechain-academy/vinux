@@ -6,6 +6,87 @@
 //
 
 import SwiftUI
+import GnostrGit
+import Combine // Import Combine for ObservableObject
+
+class GitOperationTracker: ObservableObject {
+    @Published var activeClones: [String: String] = [:] // repo_name: status_message
+    private var operationCancellables: [String: Set<AnyCancellable>] = [:]
+
+    func startGitOperation(repo_url: String, repo_name: String, commitsToFetch: [String]) {
+        if activeClones[repo_name] != nil {
+            print("Operation for \(repo_name) already in progress.")
+            return
+        }
+
+        activeClones[repo_name] = "Initiating..."
+
+        let localRepoLocation = documentURL.appendingPathComponent(repo_name)
+        let repo = GitRepository(localRepoLocation, credentialManager)
+
+        if !credentialAdded {
+            addCredential()
+        }
+
+        var cancellables = Set<AnyCancellable>()
+
+        repo.remoteProgress.$inProgress
+            .dropFirst()
+            .sink { [weak self] inProgress in
+                guard let self = self else { return }
+                if !inProgress {
+                    if repo.remoteProgress.errorReceiver.hasError {
+                        let errorMessage = repo.remoteProgress.errorReceiver.extraMessage ?? "Unknown error"
+                        print("Git operation for \(repo_name) failed: \(errorMessage)")
+                        DispatchQueue.main.async {
+                            self.activeClones[repo_name] = "Failed: \(errorMessage)"
+                            self.operationCancellables[repo_name]?.removeAll()
+                            self.operationCancellables[repo_name] = nil
+                        }
+                    } else {
+                        print("Git operation for \(repo_name) completed successfully.")
+                        DispatchQueue.main.async {
+                            self.activeClones[repo_name] = "Completed"
+                            // Optionally remove after a delay or keep for user to see status
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                self.activeClones[repo_name] = nil
+                            }
+                            self.operationCancellables[repo_name]?.removeAll()
+                            self.operationCancellables[repo_name] = nil
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.activeClones[repo_name] = repo.remoteProgress.operation
+                    }
+                }
+            }
+            .store(in: &cancellables)
+
+        self.operationCancellables[repo_name] = cancellables // Retain cancellables
+
+        repo.open()
+
+        if repo.exists() {
+            let allRemotes = repo.getRemotes()
+            if let remoteOrigin = allRemotes.first {
+                print("Repository exists. Fetching from \(remoteOrigin.url ?? "unknown remote")")
+                repo.fetch(remoteOrigin)
+            } else {
+                let errorMessage = "Repository exists but no remote 'origin' found for fetching."
+                print("Error: \(errorMessage)")
+                DispatchQueue.main.async {
+                    self.activeClones[repo_name] = "Failed: \(errorMessage)"
+                    self.operationCancellables[repo_name]?.removeAll()
+                    self.operationCancellables[repo_name] = nil
+                }
+            }
+        } else {
+            print("Cloning repository from \(repo_url)")
+            repo.clone(repo_url)
+        }
+    }
+}
 
 struct RepoInfo: Identifiable {
     let id = UUID()
@@ -14,6 +95,7 @@ struct RepoInfo: Identifiable {
     let commitsToFetch: [String]
 }
 
+
 @main
 struct damusApp: App {
     let nipService = NipService()
@@ -21,6 +103,7 @@ struct damusApp: App {
     let timer = Timer.publish(every: 3600, on: .main, in: .common).autoconnect() // Fetch every hour
     @StateObject var webViewURL = WebViewURL()
     @StateObject var webViewModel = WebViewModel()
+    @StateObject var gitOperationTracker = GitOperationTracker() // Instantiate the tracker
     @State private var repoToClone: RepoInfo?
     
     var body: some Scene {
@@ -30,11 +113,13 @@ struct damusApp: App {
                     MainView()
                         .environmentObject(webViewURL)
                         .environmentObject(webViewModel)
+                        .environmentObject(gitOperationTracker) // Pass as EnvironmentObject
                         .onAppear {
                             nipService.setup()
                             gnostrService.setup()
                             webViewModel.onCloneTapped = { url, name, commits in
-                                self.repoToClone = RepoInfo(url: url, name: name, commitsToFetch: commits)
+                                gitOperationTracker.startGitOperation(repo_url: url, repo_name: name, commitsToFetch: commits)
+                                self.webViewURL.url = nil // Dismiss the WebView after initiating clone
                             }
                         }
                         .onReceive(timer) { _ in
