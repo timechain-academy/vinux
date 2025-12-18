@@ -137,67 +137,147 @@ struct SearchResultsView: View {
         }
     }
     
-    func search_changed(_ new: String) {
-
-        guard new.count != 0 else {
-            return
-        }
-        
-        if new.starts(with: "name:") {
-            let name = String(new.dropFirst(5))
-            self.result = .name(name)
-            return
-        }
-        
-        if new.starts(with: "d:") {
-            let d_tag = String(new.dropFirst(2))
-            self.result = .d_tag(d_tag)
-            return
-        }
-        
-        if new.first! == "#" {
-            let ht = String(new.dropFirst())
-            self.result = .hashtag(ht)
-            return
-        }
-        
-        if let _ = hex_decode(new), new.count == 64 {
-            self.result = .hex(new)
-            return
-        }
-        
-        if new.starts(with: "npub") {
-            if let _ = try? bech32_decode(new) {
-                self.result = .profile(new)
+        func search_changed(_ new: String) {
+    
+            guard new.count != 0 else {
+    
+                self.result = nil
+    
+                print("Search cleared")
+    
                 return
+    
             }
-        }
-        
-        if new.starts(with: "note") {
-            if let _ = try? bech32_decode(new) {
-                self.result = .note(new)
+    
+    
+    
+            print("Performing search for: '\(new)'")
+    
+    
+    
+            if new.starts(with: "name:") {
+    
+                let name = String(new.dropFirst(5))
+    
+                print("Search type: name, value: \(name)")
+    
+                self.result = .name(name)
+    
                 return
+    
             }
-        }
-        
-        let profs = damus_state.profiles.profiles.enumerated()
-        let results: [(String, Profile)] = profs.reduce(into: []) { acc, els in
-            let pk = els.element.key
-            let prof = els.element.value.profile
-            let lowname = prof.name.map { $0.lowercased() }
-            let lowdisp = prof.display_name.map { $0.lowercased() }
-            let ok = new.count == 1 ?
-            ((lowname?.starts(with: new) ?? false) ||
-             (lowdisp?.starts(with: new) ?? false)) : (pk.starts(with: new) || String(new.dropFirst()) == pk
-                || lowname?.contains(new) ?? false
-                || lowdisp?.contains(new) ?? false)
-            if ok {
-                acc.append((pk, prof))
-            }
-        }
+    
             
-        self.result = .profiles(results)
-    }
+    
+            if new.starts(with: "d:") {
+    
+                let d_tag = String(new.dropFirst(2))
+    
+                print("Search type: d_tag, value: \(d_tag)")
+    
+                self.result = .d_tag(d_tag)
+    
+                return
+    
+            }
+    
+            
+    
+            if new.first! == "#" {
+    
+                let ht = String(new.dropFirst())
+    
+                print("Search type: hashtag, value: \(ht)")
+    
+                self.result = .hashtag(ht)
+    
+                return
+    
+            }
+    
+            
+    
+            if let _ = hex_decode(new), new.count == 64 {
+    
+                print("Search type: hex, value: \(new)")
+    
+                self.result = .hex(new)
+    
+                return
+    
+            }
+    
+            
+    
+            if new.starts(with: "npub") {
+    
+                if let _ = try? bech32_decode(new) {
+    
+                    print("Search type: profile, value: \(new)")
+    
+                    self.result = .profile(new)
+    
+                    return
+    
+                }
+    
+            }
+    
+            
+    
+            if new.starts(with: "note") {
+    
+                if let _ = try? bech32_decode(new) {
+    
+                    print("Search type: note, value: \(new)")
+    
+                    self.result = .note(new)
+    
+                    return
+    
+                }
+    
+            }
+    
+            
+    
+            print("Search type: profiles (fallback)")
+    
+            let profs = damus_state.profiles.profiles.enumerated()
+    
+            let results: [(String, Profile)] = profs.reduce(into: []) { acc, els in
+    
+                let pk = els.element.key
+    
+                let prof = els.element.value.profile
+    
+                let lowname = prof.name.map { $0.lowercased() }
+    
+                let lowdisp = prof.display_name.map { $0.lowercased() }
+    
+                let ok = new.count == 1 ?
+    
+                ((lowname?.starts(with: new) ?? false) ||
+    
+                 (lowdisp?.starts(with: new) ?? false)) : (pk.starts(with: new) || String(new.dropFirst()) == pk
+    
+                    || lowname?.contains(new) ?? false
+    
+                    || lowdisp?.contains(new) ?? false)
+    
+                if ok {
+    
+                    acc.append((pk, prof))
+    
+                }
+    
+            }
+    
+                
+    
+            self.result = .profiles(results)
+    
+        }
     
     var body: some View {
         MainContent

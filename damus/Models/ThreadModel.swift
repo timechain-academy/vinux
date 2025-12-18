@@ -154,6 +154,7 @@ class ThreadModel: ObservableObject {
         }
         
         if prepend {
+            print("Prepending event to thread: \(ev.id)")
             self.events.insert(ev, at: 0)
             objectWillChange.send()
         } else {
@@ -203,6 +204,7 @@ class ThreadModel: ObservableObject {
                         let d_tag = String(components[2])
                         
                         if kind == "30617" {
+                            print("Detected NIP-34 event, fetching announcement for d_tag: \(d_tag)")
                             let announcement_sub_id = UUID().description
                             var announcement_filter = NostrFilter()
                             announcement_filter.kinds = [30617]
@@ -212,6 +214,7 @@ class ThreadModel: ObservableObject {
                             
                             damus_state.pool.register_handler(sub_id: announcement_sub_id) { relay_id, ev in
                                 if case .nostr_event(let nostr_response) = ev, case .event(_, let announcement_event) = nostr_response {
+                                    print("Received repository announcement event: \(announcement_event.id)")
                                     self.add_event(announcement_event, privkey: self.damus_state.keypair.privkey, prepend: true)
                                     self.damus_state.pool.unsubscribe(sub_id: announcement_sub_id)
                                 }

@@ -258,14 +258,17 @@ struct EventView: View {
                 if isNip34 {
                     TagsView(tags: event.tags, onCloneTapped: { url in
                         let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
+                        print("User tapped clone URL: \(url.absoluteString)")
                         self.repoToClone = (url: url.absoluteString, name: repoName)
                     })
                     .onAppear {
                         // Automatically select the repo if there's only one clone URL
                         let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
+                        print("Found \(cloneURLs.count) clone URLs for event \(event.id)")
                         if cloneURLs.count == 1 {
                             let url = cloneURLs[0]
                             let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
+                            print("Automatically selecting repository: \(url.absoluteString)")
                             self.repoToClone = (url: url.absoluteString, name: repoName)
                         }
                     }

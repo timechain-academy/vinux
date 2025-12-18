@@ -125,7 +125,7 @@ struct GitView: View {
 
 
 
-                        Button(repo.exists() ? "Fetch remote Git repo" : "Clone remote Git repo") {
+                                    Button(repo.exists() ? "Fetch remote Git repo" : "Clone remote Git repo") {
 
 
 
@@ -133,7 +133,7 @@ struct GitView: View {
 
 
 
-                            if repo.exists() {
+                                        if repo.exists() {
 
 
 
@@ -141,7 +141,7 @@ struct GitView: View {
 
 
 
-                                let allRemotes = repo.getRemotes()
+                                            let allRemotes = repo.getRemotes()
 
 
 
@@ -149,7 +149,7 @@ struct GitView: View {
 
 
 
-                                if let remoteOrigin = allRemotes.first {
+                                            if let remoteOrigin = allRemotes.first {
 
 
 
@@ -157,7 +157,7 @@ struct GitView: View {
 
 
 
-                                    repo.fetch(remoteOrigin)
+                                                print("Repository exists. Fetching from \(remoteOrigin.url ?? "unknown remote")")
 
 
 
@@ -165,7 +165,7 @@ struct GitView: View {
 
 
 
-                                }
+                                                repo.fetch(remoteOrigin)
 
 
 
@@ -173,7 +173,7 @@ struct GitView: View {
 
 
 
-                            } else {
+                                            }
 
 
 
@@ -181,7 +181,7 @@ struct GitView: View {
 
 
 
-                                repo.clone(repo_url)
+                                        } else {
 
 
 
@@ -189,7 +189,7 @@ struct GitView: View {
 
 
 
-                            }
+                                            print("Cloning repository from \(repo_url)")
 
 
 
@@ -197,7 +197,7 @@ struct GitView: View {
 
 
 
-                            // We want to do repo.updateCommitGraph() but this will be invoked
+                                            repo.clone(repo_url)
 
 
 
@@ -205,7 +205,7 @@ struct GitView: View {
 
 
 
-                            // on main thread so likely before clone finishes in background thread.
+                                        }
 
 
 
@@ -213,7 +213,7 @@ struct GitView: View {
 
 
 
-                            // We don't want to do another callback so maybe await/async.
+                                        // We want to do repo.updateCommitGraph() but this will be invoked
 
 
 
@@ -221,7 +221,23 @@ struct GitView: View {
 
 
 
-                        }
+                                        // on main thread so likely before clone finishes in background thread.
+
+
+
+
+
+
+
+                                        // We don't want to do another callback so maybe await/async.
+
+
+
+
+
+
+
+                                    }
 
 
 
