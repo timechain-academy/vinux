@@ -109,95 +109,375 @@ struct GitView: View {
 
 
 
-    var body: some View {
+        var body: some View {
 
 
 
-        VStack {
 
 
 
-            //Text("On Mac Catalyst, you should be able to find the cloned repo in `~/Documents/.gnostr/\(repo_name)`.").italic()
 
+            VStack {
 
 
 
 
 
 
-                                    Button(repo.exists() ? "Fetch remote Git repo" : "Clone remote Git repo") {
 
+                //Text("On Mac Catalyst, you should be able to find the cloned repo in `~/Documents/\(repo_name)`.").italic()
 
 
 
 
 
 
-                                        if repo.exists() {
 
+    
 
 
 
 
 
 
-                                            let allRemotes = repo.getRemotes()
 
+                Button(repo.exists() ? "Fetch remote Git repo" : "Clone remote Git repo") {
 
 
 
 
 
 
-                                            if let remoteOrigin = allRemotes.first {
 
+                    if repo.exists() {
 
 
 
 
 
 
-                                                print("Repository exists. Fetching from \(remoteOrigin.url ?? "unknown remote")")
 
+                        let allRemotes = repo.getRemotes()
 
 
 
 
 
 
-                                                repo.fetch(remoteOrigin)
 
+                        if let remoteOrigin = allRemotes.first {
 
 
 
 
 
 
-                                            }
 
+                            print("Repository exists. Fetching from \(remoteOrigin.url ?? "unknown remote")")
 
 
 
 
 
 
-                                        } else {
 
+                            repo.fetch(remoteOrigin)
 
 
 
 
 
 
-                                            print("Cloning repository from \(repo_url)")
 
+                        }
 
 
 
 
 
 
-                                            repo.clone(repo_url)
+
+                    } else {
+
+
+
+
+
+
+
+                        print("Cloning repository from \(repo_url)")
+
+
+
+
+
+
+
+                        repo.clone(repo_url)
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+                    // We want to do repo.updateCommitGraph() but this will be invoked
+
+
+
+
+
+
+
+                    // on main thread so likely before clone finishes in background thread.
+
+
+
+
+
+
+
+                    // We don't want to do another callback so maybe await/async.
+
+
+
+
+
+
+
+                }
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+                if repo.remoteProgress.inProgress {
+
+
+
+
+
+
+
+                    ProgressView(repo.remoteProgress.operation)
+
+
+
+
+
+
+
+                }
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+                if repo.hasRepo {
+
+
+
+
+
+
+
+                    // Hide the buttons if there are operations in progress
+
+
+
+
+
+
+
+                    if !repo.remoteProgress.inProgress {
+
+
+
+
+
+
+
+                        HStack {
+
+
+
+
+
+
+
+                            Button("Push to origin") {
+
+
+
+
+
+
+
+                                let allRemotes = repo.getRemotes()     // get the list of remotes
+
+
+
+
+
+
+
+                                let remoteOrigin = allRemotes[0]       // assuming you have only one remote i.e. origin
+
+
+
+
+
+
+
+                                repo.push(remoteOrigin, false)         // push all branches to the corresponding one in origin
+
+
+
+
+
+
+
+                            }
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+                            Button("Fetch from origin") {
+
+
+
+
+
+
+
+                                let allRemotes = repo.getRemotes()
+
+
+
+
+
+
+
+                                let remoteOrigin = allRemotes[0]
+
+
+
+
+
+
+
+                                repo.fetch(remoteOrigin)
+
+
+
+
+
+
+
+                            }
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+                            Button("Merge origin/master into current branch") {
+
+
+
+
+
+
+
+                                repo.updateCommitGraph()
+
+
+
+
+
+
+
+                                for c in repo.commitGraph.commits {
+
+
+
+
+
+
+
+                                    for ref in c.refs {
+
+
+
+
+
+
+
+                                        if ref.name == "refs/remotes/origin/master" {
+
+
+
+
+
+
+
+                                            print("Found", ref.name)
+
+
+
+
+
+
+
+                                             repo.merge([ref]) // merge the changes in the remote repo "origin/master" into the local "master"
 
 
 
@@ -213,30 +493,6 @@ struct GitView: View {
 
 
 
-                                        // We want to do repo.updateCommitGraph() but this will be invoked
-
-
-
-
-
-
-
-                                        // on main thread so likely before clone finishes in background thread.
-
-
-
-
-
-
-
-                                        // We don't want to do another callback so maybe await/async.
-
-
-
-
-
-
-
                                     }
 
 
@@ -245,111 +501,11 @@ struct GitView: View {
 
 
 
-            if repo.remoteProgress.inProgress {
-
-
-
-                ProgressView(repo.remoteProgress.operation)
-
-
-
-            }
-
-
-
-
-
-
-
-            if repo.hasRepo {
-
-
-
-                // Hide the buttons if there are operations in progress
-
-
-
-                if !repo.remoteProgress.inProgress {
-
-
-
-                    Button("Push to origin") {
-
-
-
-                        let allRemotes = repo.getRemotes()     // get the list of remotes
-
-
-
-                        let remoteOrigin = allRemotes[0]       // assuming you have only one remote i.e. origin
-
-
-
-                        repo.push(remoteOrigin, false)         // push all branches to the corresponding one in origin
-
-
-
-                    }
-
-
-
-
-
-
-
-                    Button("Fetch from origin") {
-
-
-
-                        let allRemotes = repo.getRemotes()
-
-
-
-                        let remoteOrigin = allRemotes[0]
-
-
-
-                        repo.fetch(remoteOrigin)
-
-
-
-                    }
-
-
-
-
-
-
-
-                    Button("Merge origin/master into current branch") {
-
-
-
-                        repo.updateCommitGraph()
-
-
-
-                        for c in repo.commitGraph.commits {
-
-
-
-                            for ref in c.refs {
-
-
-
-                                if ref.name == "refs/remotes/origin/master" {
-
-
-
-                                    print("Found", ref.name)
-
-
-
-                                     repo.merge([ref]) // merge the changes in the remote repo "origin/master" into the local "master"
-
-
-
                                 }
+
+
+
+
 
 
 
@@ -357,11 +513,103 @@ struct GitView: View {
 
 
 
+
+
+
+
                         }
 
 
 
+
+
+
+
                     }
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+                    // At the moment, clone will update hasRepo after completion. So this
+
+
+
+
+
+
+
+                    // has the effect of automatically update the UI if the clone is successful.
+
+
+
+
+
+
+
+                    List(repo.commitGraph.commits) { commit in
+
+
+
+
+
+
+
+                        VStack(alignment: .leading) {
+
+
+
+
+
+
+
+                            Text(commit.message).bold()
+
+
+
+
+
+
+
+                            Text(commit.author.name)
+
+
+
+
+
+
+
+                        }
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+                    .listStyle(.plain)
+
+
+
+
 
 
 
@@ -373,31 +621,43 @@ struct GitView: View {
 
 
 
-                // At the moment, clone will update hasRepo after completion. So this
+            }
 
 
 
-                // has the effect of automatically update the UI if the clone is successful.
 
 
 
-                List(repo.commitGraph.commits) { commit in
+
+            .padding(5)
 
 
 
-                    VStack(alignment: .leading) {
 
 
 
-                        Text(commit.message).bold()
+
+            .onAppear {
 
 
 
-                        Text(commit.author.name)
 
 
 
-                    }
+
+                if !credentialAdded {
+
+
+
+
+
+
+
+                    addCredential()
+
+
+
+
 
 
 
@@ -405,59 +665,51 @@ struct GitView: View {
 
 
 
-                .listStyle(.plain)
+
+
+
+
+                repo.open()
+
+
+
+
+
+
+
+                if repo.exists() {
+
+
+
+
+
+
+
+                    repo.updateCommitGraph()
+
+
+
+
+
+
+
+                }
+
+
+
+
 
 
 
             }
+
+
+
+
 
 
 
         }
-
-
-
-        .padding(5)
-
-
-
-        .onAppear {
-
-
-
-            if !credentialAdded {
-
-
-
-                addCredential()
-
-
-
-            }
-
-
-
-            repo.open()
-
-
-
-            if repo.exists() {
-
-
-
-                repo.updateCommitGraph()
-
-
-
-            }
-
-
-
-        }
-
-
-
-    }
 
 
 
