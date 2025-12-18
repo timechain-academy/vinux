@@ -268,7 +268,6 @@ struct EventView: View {
                             let commitTags = event.tags.filter { $0.first == "commit" || $0.first == "parent-commit" }
                             self.webViewModel.commitsToFetch = commitTags.compactMap { $0.count > 1 ? $0[1] : nil }
                             self.webViewModel.clone() // Directly initiate clone from webViewModel
-                            self.webViewURL.url = url // Open the WebView where the actual clone button is
                                             }, onWebTapped: { url in
                                                 print("User tapped web URL: \(url.absoluteString)")
                                                 self.webViewURL.url = url
