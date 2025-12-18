@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import MiniGit
+import GnostrGit
 
 class GnostrService {
     let repo_url = "https://github.com/gnostr-org/gnostr.git"

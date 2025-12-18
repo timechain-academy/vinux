@@ -9,7 +9,7 @@
 
 import SwiftUI
 
-import MiniGit
+import GnostrGit
 
 
 

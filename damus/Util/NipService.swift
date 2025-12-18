@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import MiniGit
+import GnostrGit
 
 class NipService {
     let repo_url = "https://github.com/nostr-protocol/nips.git"
