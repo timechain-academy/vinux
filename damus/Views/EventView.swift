@@ -292,14 +292,34 @@ struct EventView: View {
                         .buttonStyle(.plain)
                     }
                     .onAppear {
-                        // Automatically select the repo if there's only one clone URL
+                        let d_tag = event.tags.first(where: { $0.first == "d" })?.last
                         let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
-                        print("Found \(cloneURLs.count) clone URLs for event \(event.id)")
-                        if cloneURLs.count == 1 {
+                        
+                        if cloneURLs.isEmpty, let d = d_tag {
+                            print("No clone URLs found, searching for 30617 event for d_tag: \(d)")
+                            let announcement_sub_id = UUID().description
+                            var announcement_filter = NostrFilter()
+                            announcement_filter.kinds = [30617]
+                            announcement_filter.tags = ["d": [d]]
+                            announcement_filter.limit = 1
+                            
+                            damus.pool.register_handler(sub_id: announcement_sub_id) { relay_id, ev in
+                                if case .nostr_event(let nostr_response) = ev, case .event(_, let announcement_event) = nostr_response {
+                                    print("Received 30617 event for d_tag: \(d)")
+                                    let foundCloneURLs = announcement_event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
+                                    if let url = foundCloneURLs.first {
+                                        print("Found clone URL from 30617 event: \(url.absoluteString)")
+                                        self.repoToClone = (url: url.absoluteString, name: d)
+                                    }
+                                    self.damus.pool.unsubscribe(sub_id: announcement_sub_id)
+                                }
+                            }
+                            damus.pool.send(.subscribe(.init(filters: [announcement_filter], sub_id: announcement_sub_id)))
+                        } else if cloneURLs.count == 1 {
                             let url = cloneURLs[0]
                             let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
                             print("Automatically selecting repository: \(url.absoluteString)")
-                            self.repoToClone = (url: url.absoluteString, name: repoName)
+                            self.repoToClone = (url: url.absoluteString, name: d_tag ?? repoName)
                         }
                     }
 
