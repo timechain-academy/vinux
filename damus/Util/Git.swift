@@ -117,7 +117,7 @@ struct GitView: View {
 
 
 
-            Text("On Mac Catalyst, you should be able to find the cloned repo in `~/Documents/.gnostr/\(repo_name)`.").italic()
+            //Text("On Mac Catalyst, you should be able to find the cloned repo in `~/Documents/.gnostr/\(repo_name)`.").italic()
 
 
 
