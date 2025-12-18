@@ -13,6 +13,7 @@ struct damusApp: App {
     let gnostrService = GnostrService()
     let timer = Timer.publish(every: 3600, on: .main, in: .common).autoconnect() // Fetch every hour
     @StateObject var webViewURL = WebViewURL()
+    @StateObject var webViewModel = WebViewModel()
 
     var body: some Scene {
         WindowGroup {
@@ -30,18 +31,45 @@ struct damusApp: App {
                         }
 
                     if let url = webViewURL.url {
-                        Color.black.opacity(0.4)
-                            .edgesIgnoringSafeArea(.all)
-                            .onTapGesture {
-                                webViewURL.url = nil
+                        VStack {
+                            HStack {
+                                Button(action: {
+                                    webViewModel.goBack()
+                                }) {
+                                    Image(systemName: "chevron.left")
+                                }
+                                .disabled(!webViewModel.canGoBack)
+
+                                Button(action: {
+                                    webViewModel.goForward()
+                                }) {
+                                    Image(systemName: "chevron.right")
+                                }
+                                .disabled(!webViewModel.canGoForward)
+
+                                Button(action: {
+                                    webViewModel.refresh()
+                                }) {
+                                    Image(systemName: "arrow.clockwise")
+                                }
+                                
+                                Spacer()
+                                
+                                Button(action: {
+                                    webViewURL.url = nil
+                                }) {
+                                    Image(systemName: "xmark")
+                                }
                             }
-                        
-                        WebView(url: url)
-                            .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.8)
-                            .background(Color(.systemBackground))
-                            .cornerRadius(12)
-                            .shadow(radius: 20)
-                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                            .padding()
+                            
+                            WebView(url: url, viewModel: webViewModel)
+                        }
+                        .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.8)
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .shadow(radius: 20)
+                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                     }
                 }
             }
