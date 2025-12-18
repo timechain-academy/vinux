@@ -11,6 +11,7 @@ struct TagsView: View {
     let tags: [[String]]
     var onCloneTapped: ((URL) -> Void)?
     var onWebTapped: ((URL) -> Void)?
+    var onDTapped: ((String) -> Void)?
 
     @State private var totalHeight
           = CGFloat.zero
@@ -78,6 +79,13 @@ struct TagsView: View {
         } else if tag.first == "web", tag.count > 1, let url = URL(string: tag[1]), let onWebTapped = onWebTapped {
             Button(action: {
                 onWebTapped(url)
+            }) {
+                tagContent
+            }
+            .buttonStyle(.plain)
+        } else if tag.first == "d", tag.count > 1, let onDTapped = onDTapped {
+            Button(action: {
+                onDTapped(tag[1])
             }) {
                 tagContent
             }

@@ -263,6 +263,15 @@ struct EventView: View {
                     }, onWebTapped: { url in
                         print("User tapped web URL: \(url.absoluteString)")
                         self.webViewURL.url = url
+                    }, onDTapped: { d_tag in
+                        let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
+                        if cloneURLs.count == 1 {
+                            let url = cloneURLs[0]
+                            print("User tapped d: tag, automatically selecting repository: \(url.absoluteString)")
+                            self.repoToClone = (url: url.absoluteString, name: d_tag)
+                        } else {
+                            print("User tapped d: tag, but there are \(cloneURLs.count) clone URLs. Please select a specific clone URL.")
+                        }
                     })
                     .onAppear {
                         // Automatically select the repo if there's only one clone URL
