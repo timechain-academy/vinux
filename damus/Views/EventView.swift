@@ -257,6 +257,10 @@ struct EventView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .allowsHitTesting(!embedded)
                 
+                if event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft {
+                    TagsView(tags: event.tags)
+                }
+                
                 if !embedded {
                     let blocks = event.blocks(damus.keypair.privkey).filter { block in
                         guard case .mention(let mention) = block else {
