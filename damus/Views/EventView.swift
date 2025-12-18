@@ -192,7 +192,9 @@ struct EventView: View {
                         .padding([.top], 1)
                 }
             } else if event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft {
-                GitView()
+                let repo_url = event.tags.first(where: { $0.first == "clone" })?.last ?? "https://github.com/example/repo.git"
+                let repo_name = URL(string: repo_url)?.lastPathComponent.replacingOccurrences(of: ".git", with: "") ?? "gnostr"
+                GitView(repo_url: repo_url, repo_name: repo_name)
             } else {
                 TextEvent(event, pubkey: pubkey)
                     .padding([.top], 6)
