@@ -117,7 +117,7 @@ struct GitView: View {
 
 
 
-    var body: some View {
+        var body: some View {
 
 
 
@@ -125,7 +125,7 @@ struct GitView: View {
 
 
 
-            VStack {
+    
 
 
 
@@ -133,7 +133,87 @@ struct GitView: View {
 
 
 
-                //Text("On Mac Catalyst, you should be able to find the cloned repo in `~/Documents/\(repo_name)`.").italic()
+            var filteredCommits: [GitCommit] {
+
+
+
+
+
+
+
+                if commitsToFetch.isEmpty {
+
+
+
+
+
+
+
+                    return repo.commitGraph.commits
+
+
+
+
+
+
+
+                } else {
+
+
+
+
+
+
+
+                    return repo.commitGraph.commits.filter { commitsToFetch.contains($0.id.description) }
+
+
+
+
+
+
+
+                }
+
+
+
+
+
+
+
+            }
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+                VStack {
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+                    //Text("On Mac Catalyst, you should be able to find the cloned repo in `~/Documents/\(repo_name)`.").italic()
 
 
 
@@ -565,7 +645,7 @@ struct GitView: View {
 
 
 
-                    List(repo.commitGraph.commits) { commit in
+                    List(filteredCommits) { commit in
 
 
 
