@@ -19,7 +19,8 @@ let package = Package(
         .package(url: "https://github.com/jb55/secp256k1.swift.git", branch: "main"),
         .package(url: "https://github.com/onevcat/Kingfisher.git", .upToNextMajor(from: "7.0.0")),
         .package(url: "https://github.com/joshuajhomann/Shimmer", branch: "master"),
-        .package(url: "https://github.com/SparrowTek/Vault", .upToNextMajor(from: "1.0.0"))
+        .package(url: "https://github.com/SparrowTek/Vault", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/MiniGit/MiniGit.git", .upToNextMajor(from: "1.0.0"))
     ],
     targets: [
         .target(
@@ -29,7 +30,8 @@ let package = Package(
                 .product(name: "secp256k1", package: "secp256k1.swift"),
                 .product(name: "Kingfisher", package: "Kingfisher"),
                 .product(name: "Shimmer", package: "Shimmer"),
-                .product(name: "Vault", package: "Vault")
+                .product(name: "Vault", package: "Vault"),
+                .product(name: "MiniGit", package: "MiniGit")
             ],
             path: "damus",
             exclude: ["Preview Content"]
