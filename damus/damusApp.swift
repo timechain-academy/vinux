@@ -9,14 +9,23 @@ import SwiftUI
 
 @main
 struct damusApp: App {
+    let nipService = NipService()
+    let gnostrService = GnostrService()
+    let timer = Timer.publish(every: 3600, on: .main, in: .common).autoconnect() // Fetch every hour
+
     var body: some Scene {
         WindowGroup {
             MainView()
+                .onAppear {
+                    nipService.setup()
+                    gnostrService.setup()
+                }
+                .onReceive(timer) { _ in
+                    nipService.fetch()
+                    gnostrService.fetch()
+                }
         }
-        
     }
-    
-
 }
 
 struct MainView: View {
