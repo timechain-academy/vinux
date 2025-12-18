@@ -33,20 +33,20 @@ func render_note_content(ev: NostrEvent, profiles: Profiles, privkey: String?) -
             content += txt
         case .repository_announcement(let txt):
             content += txt
-        //case .repository_state_announcement(let txt):
-        //    return str + txt
-        //case .repository_reply(let txt):
-        //    return str + txt
-        //case .repository_patch(let txt):
-        //    return str + txt
-        //case .repository_issue_open(let txt):
-        //    return str + txt
-        //case .repository_issue_applied(let txt):
-        //    return str + txt
-        //case .repository_issue_closed(let txt):
-        //    return str + txt
-        //case .repository_issue_draft(let txt):
-        //    return str + txt
+        case .repository_state_announcement(let txt):
+            content += txt
+        case .repository_reply(let txt):
+            content += txt
+        case .repository_patch(let txt):
+            content += txt
+        case .repository_issue_open(let txt):
+            content += txt
+        case .repository_issue_applied(let txt):
+            content += txt
+        case .repository_issue_closed(let txt):
+            content += txt
+        case .repository_issue_draft(let txt):
+            content += txt
         case .hashtag(let htag):
             content += hashtag_str(htag)
         case .invoice(let invoice):
@@ -134,6 +134,20 @@ struct NoteContentView: View {
                     case .url: return
                     case .invoice: return
                     case .repository_announcement(_):
+                        self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)
+                    case .repository_state_announcement(_):
+                        self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)
+                    case .repository_reply(_):
+                        self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)
+                    case .repository_patch(_):
+                        self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)
+                    case .repository_issue_open(_):
+                        self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)
+                    case .repository_issue_applied(_):
+                        self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)
+                    case .repository_issue_closed(_):
+                        self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)
+                    case .repository_issue_draft(_):
                         self.artifacts = render_note_content(ev: event, profiles: profiles, privkey: privkey)  
                     }
                 }

@@ -48,6 +48,13 @@ enum Block {
     case url(URL)
     case invoice(Invoice)
     case repository_announcement(String)
+    case repository_state_announcement(String)
+    case repository_reply(String)
+    case repository_patch(String)
+    case repository_issue_open(String)
+    case repository_issue_applied(String)
+    case repository_issue_closed(String)
+    case repository_issue_draft(String)
     
     var is_invoice: Invoice? {
         if case .invoice(let invoice) = self {
@@ -100,6 +107,20 @@ func render_blocks(blocks: [Block]) -> String {
         case .invoice(let inv):
             return str + inv.string
         case .repository_announcement(let txt):
+            return str + txt
+        case .repository_state_announcement(let txt):
+            return str + txt
+        case .repository_reply(let txt):
+            return str + txt
+        case .repository_patch(let txt):
+            return str + txt
+        case .repository_issue_open(let txt):
+            return str + txt
+        case .repository_issue_applied(let txt):
+            return str + txt
+        case .repository_issue_closed(let txt):
+            return str + txt
+        case .repository_issue_draft(let txt):
             return str + txt
         }
     }

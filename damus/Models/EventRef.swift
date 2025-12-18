@@ -86,6 +86,20 @@ func build_mention_indices(_ blocks: [Block], type: MentionType) -> Set<Int> {
             return
         case .repository_announcement(_):
             return
+        case .repository_state_announcement(_):
+            return
+        case .repository_reply(_):
+            return
+        case .repository_patch(_):
+            return
+        case .repository_issue_open(_):
+            return
+        case .repository_issue_applied(_):
+            return
+        case .repository_issue_closed(_):
+            return
+        case .repository_issue_draft(_):
+            return
         }
     }
 }
