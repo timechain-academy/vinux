@@ -63,7 +63,8 @@ struct TagsView: View {
         let tagText = (tag.count > 1) ? "\(tag[0]): \(tag[1])" : tag[0]
         
         let tagContent = Text(tagText)
-            .font(.footnote)
+            // Determine font based on tag type
+            .font(tag.first == "web" ? .body : .footnote)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(Color.gray.opacity(0.2))
