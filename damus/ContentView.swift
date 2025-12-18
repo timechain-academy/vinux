@@ -11,13 +11,8 @@ import Kingfisher
 
 var BOOTSTRAP_RELAYS = [
     "wss://relay.damus.io",
-    "wss://nostr-relay.wlvs.space",
-    "wss://nostr.fmt.wiz.biz",
-    "wss://relay.nostr.bg",
     "wss://nostr.oxtr.dev",
-    "wss://nostr.v0l.io",
-    "wss://nostr-2.zebedee.cloud",
-    "http://localhost:7000"
+    "ws://localhost:8080"
 ]
 
 struct TimestampedProfile {
