@@ -123,6 +123,8 @@ class HomeModel: ObservableObject {
             handle_text_event(sub_id: sub_id, ev)
         case .repository_issue_draft:
             handle_text_event(sub_id: sub_id, ev)
+        default:
+            break
         }
     }
     
