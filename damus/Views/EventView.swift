@@ -191,6 +191,8 @@ struct EventView: View {
                     TextEvent(inner_ev, pubkey: inner_ev.pubkey)
                         .padding([.top], 1)
                 }
+            } else if event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft {
+                GitView()
             } else {
                 TextEvent(event, pubkey: pubkey)
                     .padding([.top], 6)
