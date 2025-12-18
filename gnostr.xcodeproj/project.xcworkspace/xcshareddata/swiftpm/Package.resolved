@@ -1,5 +1,5 @@
 {
-  "originHash" : "7c1c6b58a34d0342e3af0bdd435ca4a49a9fe8d29b04232a15cb13f71ec06d45",
+  "originHash" : "d95722e65f7e58a060d56c91c8ea2c24724b65d7ed50681ba871a105c01a00a9",
   "pins" : [
     {
       "identity" : "kingfisher",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "2ef543ee21d63734e1c004ad6c870255e8716c50",
         "version" : "7.12.0"
-      }
-    },
-    {
-      "identity" : "minigit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/light-tech/MiniGit",
-      "state" : {
-        "branch" : "main",
-        "revision" : "95da4b4176f90d1d70fb2bc42f59068bfb077950"
       }
     },
     {
