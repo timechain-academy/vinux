@@ -130,9 +130,8 @@ struct EventView: View {
     let size: EventViewKind
     let embedded: Bool
 
-    @EnvironmentObject var action_bar: ActionBarModel
+    @EnvironmentObject var webViewURL: WebViewURL
     @State private var repoToClone: (url: String, name: String)?
-    @State private var webViewURL: URL?
 
     init(event: NostrEvent, highlight: Highlight, has_action_bar: Bool, damus: DamusState, show_friend_icon: Bool, size: EventViewKind = .normal, embedded: Bool = false) {
         self.event = event
@@ -263,7 +262,7 @@ struct EventView: View {
                         self.repoToClone = (url: url.absoluteString, name: repoName)
                     }, onWebTapped: { url in
                         print("User tapped web URL: \(url.absoluteString)")
-                        self.webViewURL = url
+                        self.webViewURL.url = url
                     })
                     .onAppear {
                         // Automatically select the repo if there's only one clone URL
@@ -285,9 +284,6 @@ struct EventView: View {
                 }
             }
             .padding([.leading], 2)
-        }
-        .sheet(item: $webViewURL) { url in
-            WebView(url: url)
         }
         .contentShape(Rectangle())
         .background(event_validity_color(event.validity))

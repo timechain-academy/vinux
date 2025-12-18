@@ -12,18 +12,39 @@ struct damusApp: App {
     let nipService = NipService()
     let gnostrService = GnostrService()
     let timer = Timer.publish(every: 3600, on: .main, in: .common).autoconnect() // Fetch every hour
+    @StateObject var webViewURL = WebViewURL()
 
     var body: some Scene {
         WindowGroup {
-            MainView()
-                .onAppear {
-                    nipService.setup()
-                    gnostrService.setup()
+            GeometryReader { geometry in
+                ZStack {
+                    MainView()
+                        .environmentObject(webViewURL)
+                        .onAppear {
+                            nipService.setup()
+                            gnostrService.setup()
+                        }
+                        .onReceive(timer) { _ in
+                            nipService.fetch()
+                            gnostrService.fetch()
+                        }
+
+                    if let url = webViewURL.url {
+                        Color.black.opacity(0.4)
+                            .edgesIgnoringSafeArea(.all)
+                            .onTapGesture {
+                                webViewURL.url = nil
+                            }
+                        
+                        WebView(url: url)
+                            .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.8)
+                            .background(Color(.systemBackground))
+                            .cornerRadius(12)
+                            .shadow(radius: 20)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                    }
                 }
-                .onReceive(timer) { _ in
-                    nipService.fetch()
-                    gnostrService.fetch()
-                }
+            }
         }
     }
 }

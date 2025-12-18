@@ -13,7 +13,8 @@
 		31D2E847295218AF006D67F8 /* Shimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D2E846295218AF006D67F8 /* Shimmer.swift */; };
 		3ACBCB78295FE5C70037388A /* TimeAgoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACBCB77295FE5C70037388A /* TimeAgoTests.swift */; };
 		        4134044B978B49D488BA /* GnostrService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1090431BDB9F4AFCBAFD /* GnostrService.swift */; };
-		        7CF41C4E24814665A963 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E500E38DD0B64A48906A /* WebView.swift */; };		4B2C17B22EF370720074B8A8 /* MiniGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B12EF370720074B8A8 /* MiniGit */; };
+		        7CF41C4E24814665A963 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E500E38DD0B64A48906A /* WebView.swift */; };
+        2BB0926883594448B70C /* WebViewURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCA721581C64DD88D43 /* WebViewURL.swift */; };		4B2C17B22EF370720074B8A8 /* MiniGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B12EF370720074B8A8 /* MiniGit */; };
 		4B2C17B42EF370720074B8A8 /* XGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B32EF370720074B8A8 /* XGit */; };
 		4B2C17B62EF370F00074B8A8 /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C17B52EF370E30074B8A8 /* Git.swift */; };
 		4C06670128FC7C5900038D2A /* RelayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06670028FC7C5900038D2A /* RelayView.swift */; };
@@ -166,7 +167,8 @@
 
 /* Begin PBXFileReference section */
 		        1090431BDB9F4AFCBAFD /* GnostrService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GnostrService.swift; sourceTree = "<group>"; };
-		        E500E38DD0B64A48906A /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };		3165648A295B70D500C64604 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
+		        E500E38DD0B64A48906A /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+        CFCA721581C64DD88D43 /* WebViewURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewURL.swift; sourceTree = "<group>"; };		3165648A295B70D500C64604 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
 		3169CAE5294E69C000EE4006 /* EmptyTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyTimelineView.swift; sourceTree = "<group>"; };
 		3169CAEC294FCCFC00EE4006 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = damus/Util/Constants.swift; sourceTree = SOURCE_ROOT; };
 		31D2E846295218AF006D67F8 /* Shimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
@@ -462,6 +464,7 @@
 				4C99737A28C92A9200E53835 /* ChatroomMetadata.swift */,
 				BA693073295D649800ADDB87 /* UserSettingsStore.swift */,
 				4FE60CDC295E1C5E00105A1F /* Wallet.swift */,
+                CFCA721581C64DD88D43 /* WebViewURL.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -909,7 +912,8 @@
 				5BAD0364A2CF4488A9D5 /* TagsView.swift in Sources */,
 				990B13C117C5414ABB15 /* NipService.swift in Sources */,
 				                4134044B978B49D488BA /* GnostrService.swift in Sources */,
-				                7CF41C4E24814665A963 /* WebView.swift in Sources */,			);
+				                7CF41C4E24814665A963 /* WebView.swift in Sources */,
+                2BB0926883594448B70C /* WebViewURL.swift in Sources */,			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4CE6DEEF27F7A08200C66700 /* Sources */ = {
