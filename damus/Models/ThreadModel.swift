@@ -140,7 +140,7 @@ class ThreadModel: ObservableObject {
         return nil
     }
     
-    func add_event(_ ev: NostrEvent, privkey: String?) {
+    func add_event(_ ev: NostrEvent, privkey: String?, prepend: Bool = false) {
         guard ev.should_show_event else {
             return
         }
@@ -153,8 +153,13 @@ class ThreadModel: ObservableObject {
             self.replies.add(id: ev.id, reply_id: reply.ref_id)
         }
         
-        if insert_uniq_sorted_event(events: &self.events, new_ev: ev, cmp: { $0.created_at < $1.created_at }) {
+        if prepend {
+            self.events.insert(ev, at: 0)
             objectWillChange.send()
+        } else {
+            if insert_uniq_sorted_event(events: &self.events, new_ev: ev, cmp: { $0.created_at < $1.created_at }) {
+                objectWillChange.send()
+            }
         }
         //self.events.append(ev)
         //self.events = self.events.sorted { $0.created_at < $1.created_at }
@@ -188,6 +193,35 @@ class ThreadModel: ObservableObject {
             guard sid == base_subid || sid == profiles_subid else {
                 return
             }
+            
+            if ev.known_kind != .repository_announcement {
+                if let a_tag = ev.tags.first(where: { $0.first == "a" }), a_tag.count > 1 {
+                    let components = a_tag[1].split(separator: ":")
+                    if components.count == 3 {
+                        let kind = String(components[0])
+                        let pubkey = String(components[1])
+                        let d_tag = String(components[2])
+                        
+                        if kind == "30617" {
+                            let announcement_sub_id = UUID().description
+                            var announcement_filter = NostrFilter()
+                            announcement_filter.kinds = [30617]
+                            announcement_filter.authors = [pubkey]
+                            announcement_filter.tags = ["d": [d_tag]]
+                            announcement_filter.limit = 1
+                            
+                            damus_state.pool.register_handler(sub_id: announcement_sub_id) { relay_id, ev in
+                                if case .nostr_event(let nostr_response) = ev, case .event(_, let announcement_event) = nostr_response {
+                                    self.add_event(announcement_event, privkey: self.damus_state.keypair.privkey, prepend: true)
+                                    self.damus_state.pool.unsubscribe(sub_id: announcement_sub_id)
+                                }
+                            }
+                            damus_state.pool.send(.subscribe(.init(filters: [announcement_filter], sub_id: announcement_sub_id)))
+                        }
+                    }
+                }
+            }
+            
             //nip-34
             if ev.known_kind ==
                 NostrKind.repository_announcement{// = 30617

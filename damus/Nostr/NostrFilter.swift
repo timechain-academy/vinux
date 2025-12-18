@@ -17,6 +17,7 @@ struct NostrFilter: Codable {
     var limit: UInt32?
     var authors: [String]?
     var hashtag: [String]? = nil
+    var tags: [String: [String]]? = nil
 
     private enum CodingKeys : String, CodingKey {
         case ids
@@ -28,6 +29,7 @@ struct NostrFilter: Codable {
         case until
         case authors
         case limit
+        case tags = "#d"
     }
 
     public static func copy(from: NostrFilter) -> NostrFilter {
