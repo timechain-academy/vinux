@@ -131,6 +131,7 @@ struct EventView: View {
     let embedded: Bool
 
     @EnvironmentObject var action_bar: ActionBarModel
+    @State private var repoToClone: (url: String, name: String)?
 
     init(event: NostrEvent, highlight: Highlight, has_action_bar: Bool, damus: DamusState, show_friend_icon: Bool, size: EventViewKind = .normal, embedded: Bool = false) {
         self.event = event
@@ -253,11 +254,25 @@ struct EventView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .allowsHitTesting(!embedded)
                 
-                if event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft {
-                    TagsView(tags: event.tags)
-                    let repo_url = event.tags.first(where: { $0.first == "clone" })?.last ?? "https://github.com/example/repo.git"
-                    let repo_name = URL(string: repo_url)?.lastPathComponent.replacingOccurrences(of: ".git", with: "") ?? "gnostr"
-                    GitView(repo_url: repo_url, repo_name: repo_name)
+                let isNip34 = event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft
+                if isNip34 {
+                    TagsView(tags: event.tags, onCloneTapped: { url in
+                        let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
+                        self.repoToClone = (url: url.absoluteString, name: repoName)
+                    })
+                    .onAppear {
+                        // Automatically select the repo if there's only one clone URL
+                        let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
+                        if cloneURLs.count == 1 {
+                            let url = cloneURLs[0]
+                            let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
+                            self.repoToClone = (url: url.absoluteString, name: repoName)
+                        }
+                    }
+
+                    if let repoInfo = repoToClone {
+                        GitView(repo_url: repoInfo.url, repo_name: repoInfo.name)
+                    }
                 }
                 
                 if !embedded {

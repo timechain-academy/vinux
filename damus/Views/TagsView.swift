@@ -9,10 +9,10 @@ import SwiftUI
 
 struct TagsView: View {
     let tags: [[String]]
+    var onCloneTapped: ((URL) -> Void)?
 
     @State private var totalHeight
-          = CGFloat.zero       // << variant for VStack
-    //    = CGFloat.infinity   // << variant for LazyVStack
+          = CGFloat.zero
 
     var body: some View {
         VStack {
@@ -20,8 +20,7 @@ struct TagsView: View {
                 self.generateContent(in: geometry)
             }
         }
-        .frame(height: totalHeight)// << variant for VStack
-        //.frame(maxHeight: totalHeight) // << variant for LazyVStack
+        .frame(height: totalHeight)
     }
 
     private func generateContent(in g: GeometryProxy) -> some View {
@@ -57,21 +56,26 @@ struct TagsView: View {
         }.background(viewHeightReader($totalHeight))
     }
 
+    @ViewBuilder
     private func item(for tag: [String]) -> some View {
-        if tag.count > 1 {
-            return Text("\(tag[0]): \(tag[1])")
-                .font(.footnote)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(8)
+        let tagText = (tag.count > 1) ? "\(tag[0]): \(tag[1])" : tag[0]
+        
+        let tagContent = Text(tagText)
+            .font(.footnote)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Color.gray.opacity(0.2))
+            .cornerRadius(8)
+
+        if tag.first == "clone", tag.count > 1, let url = URL(string: tag[1]), let onCloneTapped = onCloneTapped {
+            Button(action: {
+                onCloneTapped(url)
+            }) {
+                tagContent
+            }
+            .buttonStyle(.plain)
         } else {
-            return Text(tag[0])
-                .font(.footnote)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(8)
+            tagContent
         }
     }
 
