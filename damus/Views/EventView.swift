@@ -256,23 +256,41 @@ struct EventView: View {
                 
                 let isNip34 = event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft
                 if isNip34 {
-                    TagsView(tags: event.tags, onCloneTapped: { url in
-                        let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
-                        print("User tapped clone URL: \(url.absoluteString)")
-                        self.repoToClone = (url: url.absoluteString, name: repoName)
-                    }, onWebTapped: { url in
-                        print("User tapped web URL: \(url.absoluteString)")
-                        self.webViewURL.url = url
-                    }, onDTapped: { d_tag in
-                        let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
-                        if cloneURLs.count == 1 {
-                            let url = cloneURLs[0]
-                            print("User tapped d: tag, automatically selecting repository: \(url.absoluteString)")
-                            self.repoToClone = (url: url.absoluteString, name: d_tag)
-                        } else {
-                            print("User tapped d: tag, but there are \(cloneURLs.count) clone URLs. Please select a specific clone URL.")
+                    HStack {
+                        TagsView(tags: event.tags, onCloneTapped: { url in
+                            let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
+                            print("User tapped clone URL: \(url.absoluteString)")
+                            self.repoToClone = (url: url.absoluteString, name: repoName)
+                        }, onWebTapped: { url in
+                            print("User tapped web URL: \(url.absoluteString)")
+                            self.webViewURL.url = url
+                        }, onDTapped: { d_tag in
+                            let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
+                            if cloneURLs.count == 1 {
+                                let url = cloneURLs[0]
+                                print("User tapped d: tag, automatically selecting repository: \(url.absoluteString)")
+                                self.repoToClone = (url: url.absoluteString, name: d_tag)
+                            } else {
+                                print("User tapped d: tag, but there are \(cloneURLs.count) clone URLs. Please select a specific clone URL.")
+                            }
+                        })
+                        
+                        Button(action: {
+                            let d_tag = event.tags.first(where: { $0.first == "d" })?.last ?? "unknown-repo"
+                            let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
+                            if cloneURLs.count == 1 {
+                                let url = cloneURLs[0]
+                                print("User tapped git icon, automatically selecting repository: \(url.absoluteString)")
+                                self.repoToClone = (url: url.absoluteString, name: d_tag)
+                            } else {
+                                print("User tapped git icon, but there are \(cloneURLs.count) clone URLs. Please select a specific clone URL.")
+                            }
+                        }) {
+                            Image(systemName: "arrow.down.circle")
+                                .font(.footnote)
                         }
-                    })
+                        .buttonStyle(.plain)
+                    }
                     .onAppear {
                         // Automatically select the repo if there's only one clone URL
                         let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
