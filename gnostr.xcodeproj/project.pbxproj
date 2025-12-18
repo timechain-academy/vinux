@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,8 +14,8 @@
 		31D2E847295218AF006D67F8 /* Shimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D2E846295218AF006D67F8 /* Shimmer.swift */; };
 		3ACBCB78295FE5C70037388A /* TimeAgoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACBCB77295FE5C70037388A /* TimeAgoTests.swift */; };
 		4134044B978B49D488BA /* GnostrService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1090431BDB9F4AFCBAFD /* GnostrService.swift */; };
-		4B2C17B22EF370720074B8A8 /* MiniGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B12EF370720074B8A8 /* MiniGit */; };
-		4B2C17B42EF370720074B8A8 /* XGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B32EF370720074B8A8 /* XGit */; };
+		4B1654932EF4AF5700A9DD09 /* GnostrGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B1654922EF4AF5700A9DD09 /* GnostrGit */; };
+		4B1654952EF4AF5700A9DD09 /* XGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B1654942EF4AF5700A9DD09 /* XGit */; };
 		4B2C17B62EF370F00074B8A8 /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C17B52EF370E30074B8A8 /* Git.swift */; };
 		4C06670128FC7C5900038D2A /* RelayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06670028FC7C5900038D2A /* RelayView.swift */; };
 		4C06670428FC7EC500038D2A /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4C06670328FC7EC500038D2A /* Kingfisher */; };
@@ -348,10 +348,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B2C17B42EF370720074B8A8 /* XGit in Frameworks */,
+				4B1654952EF4AF5700A9DD09 /* XGit in Frameworks */,
 				4C06670428FC7EC500038D2A /* Kingfisher in Frameworks */,
+				4B1654932EF4AF5700A9DD09 /* GnostrGit in Frameworks */,
 				6C7DE41F2955169800E66263 /* Vault in Frameworks */,
-				4B2C17B22EF370720074B8A8 /* MiniGit in Frameworks */,
 				4CE6DF1227F7A2B300C66700 /* Starscream in Frameworks */,
 				4C649881286E0EE300EAE2B3 /* secp256k1 in Frameworks */,
 			);
@@ -670,8 +670,8 @@
 				4C649880286E0EE300EAE2B3 /* secp256k1 */,
 				4C06670328FC7EC500038D2A /* Kingfisher */,
 				6C7DE41E2955169800E66263 /* Vault */,
-				4B2C17B12EF370720074B8A8 /* MiniGit */,
-				4B2C17B32EF370720074B8A8 /* XGit */,
+				4B1654922EF4AF5700A9DD09 /* GnostrGit */,
+				4B1654942EF4AF5700A9DD09 /* XGit */,
 			);
 			productName = damus;
 			productReference = 4CE6DEE327F7A08100C66700 /* gnostr.app */;
@@ -752,7 +752,7 @@
 				4C06670228FC7EC500038D2A /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				3169CAE9294FCABA00EE4006 /* XCRemoteSwiftPackageReference "Shimmer" */,
 				6C7DE41D2955169800E66263 /* XCRemoteSwiftPackageReference "Vault" */,
-				4B2C17B02EF370720074B8A8 /* XCRemoteSwiftPackageReference "MiniGit" */,
+				4B1654912EF4AF5700A9DD09 /* XCLocalSwiftPackageReference "Git" */,
 			);
 			productRefGroup = 4CE6DEE427F7A08100C66700 /* Products */;
 			projectDirPath = "";
@@ -1274,20 +1274,19 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		4B1654912EF4AF5700A9DD09 /* XCLocalSwiftPackageReference "Git" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Git;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		3169CAE9294FCABA00EE4006 /* XCRemoteSwiftPackageReference "Shimmer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/joshuajhomann/Shimmer";
 			requirement = {
 				branch = master;
-				kind = branch;
-			};
-		};
-		4B2C17B02EF370720074B8A8 /* XCRemoteSwiftPackageReference "MiniGit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/light-tech/MiniGit";
-			requirement = {
-				branch = main;
 				kind = branch;
 			};
 		};
@@ -1326,14 +1325,12 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4B2C17B12EF370720074B8A8 /* MiniGit */ = {
+		4B1654922EF4AF5700A9DD09 /* GnostrGit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4B2C17B02EF370720074B8A8 /* XCRemoteSwiftPackageReference "MiniGit" */;
-			productName = MiniGit;
+			productName = GnostrGit;
 		};
-		4B2C17B32EF370720074B8A8 /* XGit */ = {
+		4B1654942EF4AF5700A9DD09 /* XGit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4B2C17B02EF370720074B8A8 /* XCRemoteSwiftPackageReference "MiniGit" */;
 			productName = XGit;
 		};
 		4C06670328FC7EC500038D2A /* Kingfisher */ = {
