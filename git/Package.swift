@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "MiniGit",
+    name: "GnostrGit",
     platforms: [
         .iOS(.v14),
         .macOS(.v11)
@@ -15,8 +15,8 @@ let package = Package(
             name: "XGit",
             targets: ["XGit"]),
         .library(
-            name: "MiniGit",
-            targets: ["MiniGit"]),
+            name: "GnostrGit",
+            targets: ["GnostrGit"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -30,7 +30,7 @@ let package = Package(
             dependencies: ["libgit2"],
             exclude: ["internal"]),
         .target(
-            name: "MiniGit",
+            name: "GnostrGit",
             dependencies: ["XGit"],
             linkerSettings: [.linkedLibrary("z"), .linkedLibrary("iconv")]),
         .binaryTarget(
@@ -38,8 +38,8 @@ let package = Package(
             url: "https://github.com/light-tech/LibGit2-On-iOS/releases/download/v1.3.1/libgit2.xcframework.zip",
             checksum: "332bfb255649f2295d5530e4abed4e81803acdc6abf18a266695fdb447ca3df2"),
         .testTarget(
-            name: "MiniGitTests",
-            dependencies: ["MiniGit"]),
+            name: "GnostrGitTests",
+            dependencies: ["GnostrGit"]),
     ],
     cxxLanguageStandard: .cxx14
 )

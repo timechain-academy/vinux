@@ -1,6 +1,6 @@
 //
 //  Extensions.swift
-//  Extension of the various data structs in MiniGit such as Remote, DiffDelta, DiffLine, DiffHunk to comply
+//  Extension of the various data structs in GnostrGit such as Remote, DiffDelta, DiffHunk to comply
 //  with the Identifiable protocol so that we can use them in SwiftUI views such as List and ForEach
 //
 //  Created by Lightech on 10/24/2048.
