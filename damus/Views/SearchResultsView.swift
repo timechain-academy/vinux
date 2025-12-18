@@ -15,6 +15,7 @@ enum Search {
     case hex(String)
     case d_tag(String)
     case name(String)
+    case maintainer(String)
 }
 
 struct SearchResultsView: View {
@@ -44,6 +45,8 @@ struct SearchResultsView: View {
             dTagResult(d_tag)
         case .name(let name):
             nameResult(name)
+        case .maintainer(let maintainer):
+            maintainerResult(maintainer)
         }
     }
 
@@ -126,19 +129,29 @@ struct SearchResultsView: View {
         }
     }
 
-    func nameResult(_ name: String) -> some View {
-        var filter = NostrFilter()
-        filter.kinds = [NostrKind.repository_announcement.rawValue]
-        filter.tags = ["name": [name]]
-        let search_model = SearchModel(pool: damus_state.pool, search: filter)
-        let dst = SearchView(appstate: damus_state, search: search_model)
-        return NavigationLink(destination: dst) {
-            Text("Search for repo with name: \(name)")
+        func nameResult(_ name: String) -> some View {
+            var filter = NostrFilter()
+            filter.kinds = [NostrKind.repository_announcement.rawValue]
+            filter.tags = ["name": [name]]
+            let search_model = SearchModel(pool: damus_state.pool, search: filter)
+            let dst = SearchView(appstate: damus_state, search: search_model)
+            return NavigationLink(destination: dst) {
+                Text("Search for repo with name: \(name)")
+            }
         }
-    }
     
-        func search_changed(_ new: String) {
-    
+        func maintainerResult(_ maintainer: String) -> some View {
+            var filter = NostrFilter()
+            filter.kinds = [NostrKind.repository_announcement.rawValue]
+            filter.pubkeys = [maintainer]
+            let search_model = SearchModel(pool: damus_state.pool, search: filter)
+            let dst = SearchView(appstate: damus_state, search: search_model)
+            return NavigationLink(destination: dst) {
+                Text("Search for repos maintained by: \(maintainer)")
+            }
+        }
+        
+        func search_changed(_ new: String) {    
             guard new.count != 0 else {
     
                 self.result = nil
@@ -155,7 +168,14 @@ struct SearchResultsView: View {
     
     
     
-            if new.starts(with: "name:") {
+            if new.starts(with: "maintainer:") || new.starts(with: "maintainers:") {
+            let prefixLength = new.starts(with: "maintainers:") ? 12 : 11
+            let maintainer = String(new.dropFirst(prefixLength))
+            self.result = .maintainer(maintainer)
+            return
+        }
+
+        if new.starts(with: "name:") {
     
                 let name = String(new.dropFirst(5))
     
@@ -169,17 +189,51 @@ struct SearchResultsView: View {
     
             
     
-            if new.starts(with: "d:") {
+                    if new.starts(with: "d:") || new.starts(with: "repo_name:") || new.starts(with: "repo_id:") {
     
-                let d_tag = String(new.dropFirst(2))
+            
     
-                print("Search type: d_tag, value: \(d_tag)")
+                        var prefixLength = 2
     
-                self.result = .d_tag(d_tag)
+            
     
-                return
+                        if new.starts(with: "repo_name:") {
     
-            }
+            
+    
+                            prefixLength = 10
+    
+            
+    
+                        } else if new.starts(with: "repo_id:") {
+    
+            
+    
+                            prefixLength = 8
+    
+            
+    
+                        }
+    
+            
+    
+                        let d_tag = String(new.dropFirst(prefixLength))
+    
+            
+    
+                        print("Search type: d_tag, value: \(d_tag)")
+    
+            
+    
+                        self.result = .d_tag(d_tag)
+    
+            
+    
+                        return
+    
+            
+    
+                    }
     
             
     

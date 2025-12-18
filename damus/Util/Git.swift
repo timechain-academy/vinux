@@ -65,6 +65,10 @@ struct GitView: View {
 
 
 
+    let commitsToFetch: [String]
+
+
+
     
 
 
@@ -77,7 +81,7 @@ struct GitView: View {
 
 
 
-    init(repo_url: String, repo_name: String) {
+    init(repo_url: String, repo_name: String, commitsToFetch: [String] = []) {
 
 
 
@@ -89,11 +93,15 @@ struct GitView: View {
 
 
 
+        self.commitsToFetch = commitsToFetch
+
+
+
         
 
 
 
-        let localRepoLocation = documentURL.appendingPathComponent(".gnostr").appendingPathComponent(repo_name)
+        let localRepoLocation = documentURL.appendingPathComponent(repo_name)
 
 
 
@@ -109,7 +117,7 @@ struct GitView: View {
 
 
 
-        var body: some View {
+    var body: some View {
 
 
 
@@ -637,7 +645,7 @@ struct GitView: View {
 
 
 
-            .onAppear {
+                    .onAppear {
 
 
 
@@ -645,7 +653,7 @@ struct GitView: View {
 
 
 
-                if !credentialAdded {
+                        if !credentialAdded {
 
 
 
@@ -653,7 +661,7 @@ struct GitView: View {
 
 
 
-                    addCredential()
+                            addCredential()
 
 
 
@@ -661,7 +669,7 @@ struct GitView: View {
 
 
 
-                }
+                        }
 
 
 
@@ -669,7 +677,7 @@ struct GitView: View {
 
 
 
-                repo.open()
+                        repo.open()
 
 
 
@@ -677,7 +685,7 @@ struct GitView: View {
 
 
 
-                if repo.exists() {
+                        if repo.exists() {
 
 
 
@@ -685,7 +693,7 @@ struct GitView: View {
 
 
 
-                    repo.updateCommitGraph()
+                            repo.updateCommitGraph()
 
 
 
@@ -693,7 +701,7 @@ struct GitView: View {
 
 
 
-                }
+                            if !commitsToFetch.isEmpty {
 
 
 
@@ -701,7 +709,63 @@ struct GitView: View {
 
 
 
-            }
+                                let allRemotes = repo.getRemotes()
+
+
+
+
+
+
+
+                                if let remoteOrigin = allRemotes.first {
+
+
+
+
+
+
+
+                                    print("Fetching commits: \(commitsToFetch.joined(separator: ", "))")
+
+
+
+
+
+
+
+                                    repo.fetch(remoteOrigin)
+
+
+
+
+
+
+
+                                }
+
+
+
+
+
+
+
+                            }
+
+
+
+
+
+
+
+                        }
+
+
+
+
+
+
+
+                    }
 
 
 
@@ -719,10 +783,18 @@ struct GitView: View {
 
 struct GitView_Previews: PreviewProvider {
 
+
+
     static var previews: some View {
 
-        GitView(repo_url: "https://github.com/gnostr-org/gnostr.git", repo_name: "gnostr")
+
+
+        GitView(repo_url: "https://github.com/gnostr-org/gnostr.git", repo_name: "gnostr", commitsToFetch: [])
+
+
 
     }
+
+
 
 }

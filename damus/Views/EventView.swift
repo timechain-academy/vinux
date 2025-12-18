@@ -274,7 +274,9 @@ struct EventView: View {
                     }
 
                     if let repoInfo = repoToClone {
-                        GitView(repo_url: repoInfo.url, repo_name: repoInfo.name)
+                        let commitTags = event.tags.filter { $0.first == "commit" || $0.first == "parent-commit" }
+                        let commits = commitTags.compactMap { $0.count > 1 ? $0[1] : nil }
+                        GitView(repo_url: repoInfo.url, repo_name: repoInfo.name, commitsToFetch: commits)
                     }
                 }
                 
