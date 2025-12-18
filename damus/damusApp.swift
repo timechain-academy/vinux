@@ -52,7 +52,8 @@ struct damusApp: App {
 struct MainView: View {
     @State var needs_setup = false;
     @State var keypair: Keypair? = nil;
-    
+    @EnvironmentObject var webViewURL: WebViewURL
+
     var body: some View {
         Group {
             if let kp = keypair, !needs_setup {
@@ -65,6 +66,11 @@ struct MainView: View {
                     }
             }
         }
+        .background(
+            KeyPressView {
+                webViewURL.url = nil
+            }
+        )
         .onReceive(handle_notify(.logout)) { _ in
             try? clear_keypair()
             keypair = nil

@@ -14,7 +14,8 @@
 		3ACBCB78295FE5C70037388A /* TimeAgoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACBCB77295FE5C70037388A /* TimeAgoTests.swift */; };
 		        4134044B978B49D488BA /* GnostrService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1090431BDB9F4AFCBAFD /* GnostrService.swift */; };
 		        7CF41C4E24814665A963 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E500E38DD0B64A48906A /* WebView.swift */; };
-        2BB0926883594448B70C /* WebViewURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCA721581C64DD88D43 /* WebViewURL.swift */; };		4B2C17B22EF370720074B8A8 /* MiniGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B12EF370720074B8A8 /* MiniGit */; };
+        2BB0926883594448B70C /* WebViewURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCA721581C64DD88D43 /* WebViewURL.swift */; };
+        5CE1859E105F49B782EA /* KeyPressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E7725E2A254E40803A /* KeyPressView.swift */; };		4B2C17B22EF370720074B8A8 /* MiniGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B12EF370720074B8A8 /* MiniGit */; };
 		4B2C17B42EF370720074B8A8 /* XGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B32EF370720074B8A8 /* XGit */; };
 		4B2C17B62EF370F00074B8A8 /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C17B52EF370E30074B8A8 /* Git.swift */; };
 		4C06670128FC7C5900038D2A /* RelayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06670028FC7C5900038D2A /* RelayView.swift */; };
@@ -168,7 +169,8 @@
 /* Begin PBXFileReference section */
 		        1090431BDB9F4AFCBAFD /* GnostrService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GnostrService.swift; sourceTree = "<group>"; };
 		        E500E38DD0B64A48906A /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
-        CFCA721581C64DD88D43 /* WebViewURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewURL.swift; sourceTree = "<group>"; };		3165648A295B70D500C64604 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
+        CFCA721581C64DD88D43 /* WebViewURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewURL.swift; sourceTree = "<group>"; };
+        E4E7725E2A254E40803A /* KeyPressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPressView.swift; sourceTree = "<group>"; };		3165648A295B70D500C64604 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
 		3169CAE5294E69C000EE4006 /* EmptyTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyTimelineView.swift; sourceTree = "<group>"; };
 		3169CAEC294FCCFC00EE4006 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = damus/Util/Constants.swift; sourceTree = SOURCE_ROOT; };
 		31D2E846295218AF006D67F8 /* Shimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
@@ -516,7 +518,8 @@
 				4CB55EF2295E5D59007FD187 /* RecommendedRelayView.swift */,
 				4CB55EF4295E679D007FD187 /* UserRelaysView.swift */,
 				                EB482820B2EF4DD8BF20 /* TagsView.swift */,
-				                E500E38DD0B64A48906A /* WebView.swift */,			);
+				                E500E38DD0B64A48906A /* WebView.swift */,
+                E4E7725E2A254E40803A /* KeyPressView.swift */,			);
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -913,7 +916,8 @@
 				990B13C117C5414ABB15 /* NipService.swift in Sources */,
 				                4134044B978B49D488BA /* GnostrService.swift in Sources */,
 				                7CF41C4E24814665A963 /* WebView.swift in Sources */,
-                2BB0926883594448B70C /* WebViewURL.swift in Sources */,			);
+                2BB0926883594448B70C /* WebViewURL.swift in Sources */,
+                5CE1859E105F49B782EA /* KeyPressView.swift in Sources */,			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4CE6DEEF27F7A08200C66700 /* Sources */ = {
