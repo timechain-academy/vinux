@@ -125,27 +125,103 @@ struct GitView: View {
 
 
 
-            Button("Clone remote Git repo") {
+                        Button(repo.exists() ? "Fetch remote Git repo" : "Clone remote Git repo") {
 
 
 
-                repo.clone(repo_url)
 
 
 
-                // We want to do repo.updateCommitGraph() but this will be invoked
+
+                            if repo.exists() {
 
 
 
-                // on main thread so likely before clone finishes in background thread.
 
 
 
-                // We don't want to do another callback so maybe await/async.
+
+                                let allRemotes = repo.getRemotes()
 
 
 
-            }
+
+
+
+
+                                if let remoteOrigin = allRemotes.first {
+
+
+
+
+
+
+
+                                    repo.fetch(remoteOrigin)
+
+
+
+
+
+
+
+                                }
+
+
+
+
+
+
+
+                            } else {
+
+
+
+
+
+
+
+                                repo.clone(repo_url)
+
+
+
+
+
+
+
+                            }
+
+
+
+
+
+
+
+                            // We want to do repo.updateCommitGraph() but this will be invoked
+
+
+
+
+
+
+
+                            // on main thread so likely before clone finishes in background thread.
+
+
+
+
+
+
+
+                            // We don't want to do another callback so maybe await/async.
+
+
+
+
+
+
+
+                        }
 
 
 
