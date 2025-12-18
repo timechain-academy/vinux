@@ -64,7 +64,7 @@ struct TagsView: View {
         
         let tagContent = Text(tagText)
             // Determine font based on tag type
-            .font(tag.first == "web" ? .body : .footnote)
+            .font((tag.first == "web" || tag.first == "source" || tag.first == "relays") ? .body : .footnote)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(Color.gray.opacity(0.2))
@@ -77,7 +77,7 @@ struct TagsView: View {
                 tagContent
             }
             .buttonStyle(.plain)
-        } else if tag.first == "web", tag.count > 1, let url = URL(string: tag[1]), let onWebTapped = onWebTapped {
+        } else if (tag.first == "web" || tag.first == "source" || tag.first == "relays"), tag.count > 1, let url = URL(string: tag[1]), let onWebTapped = onWebTapped {
             Button(action: {
                 onWebTapped(url)
             }) {

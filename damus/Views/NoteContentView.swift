@@ -85,7 +85,7 @@ struct NoteContentView: View {
     
     func MainContent() -> some View {
         return VStack(alignment: .leading) {
-            Text(Markdown.parse(content: artifacts.content))
+            Text(Markdown.parseToAttributedString(content: artifacts.content))
                 .font(eventviewsize_to_font(size))
 
             if show_images && artifacts.images.count > 0 {

@@ -15,7 +15,7 @@ public struct Markdown {
         return url.contains("://") ? url : "https://" + url
     }
 
-    public static func parse(content: String) -> AttributedString {
+    public static func parseToAttributedString(content: String) -> AttributedString {
         // Similar to the parsing in NoteContentView
         let md_opts: AttributedString.MarkdownParsingOptions =
             .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
@@ -38,6 +38,6 @@ public struct Markdown {
             output.replaceSubrange(range, with: "[\(url)](\(Markdown.withScheme(url)))")
         }
         // TODO: escape unintentional markdown
-        return Markdown.parse(content: output)
+        return Markdown.parseToAttributedString(content: output)
     }
 }

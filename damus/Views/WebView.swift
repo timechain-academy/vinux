@@ -16,26 +16,44 @@ extension URL: Identifiable {
 }
 
 struct WebView: UIViewRepresentable {
-    let url: URL
+    let url: URL? // Change to optional URL
+    let html: String? // New property for HTML content
     @ObservedObject var viewModel: WebViewModel
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self, viewModel: viewModel)
     }
 
+    init(url: URL? = nil, html: String? = nil, viewModel: WebViewModel) {
+        self.url = url
+        self.html = html
+        self.viewModel = viewModel
+    }
 
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
         webView.navigationDelegate = context.coordinator
         context.coordinator.webView = webView
         viewModel.webView = webView
-        let request = URLRequest(url: url)
-        webView.load(request)
+        
+        if let html = html {
+            webView.loadHTMLString(html, baseURL: nil) // Load HTML string
+        } else if let url = url {
+            let request = URLRequest(url: url)
+            webView.load(request) // Load URL
+        }
         return webView
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        // The initial load is handled in makeUIView
+        // This view is re-rendered when the url or html changes,
+        // so we need to update the WKWebView if the content changes
+        if let html = html {
+            uiView.loadHTMLString(html, baseURL: nil)
+        } else if let url = url {
+            let request = URLRequest(url: url)
+            uiView.load(request)
+        }
     }
 
     class Coordinator: NSObject, WKNavigationDelegate {
@@ -63,6 +81,7 @@ class WebViewModel: ObservableObject {
     @Published var repo_url: String? = nil
     @Published var repo_name: String? = nil
     @Published var commitsToFetch: [String] = []
+    @Published var htmlContent: String? = nil // Add this line
     
     var webView: WKWebView?
     var onCloneTapped: ((String, String, [String]) -> Void)?
