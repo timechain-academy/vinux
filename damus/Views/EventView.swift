@@ -132,6 +132,7 @@ struct EventView: View {
 
     @EnvironmentObject var action_bar: ActionBarModel
     @State private var repoToClone: (url: String, name: String)?
+    @State private var webViewURL: URL?
 
     init(event: NostrEvent, highlight: Highlight, has_action_bar: Bool, damus: DamusState, show_friend_icon: Bool, size: EventViewKind = .normal, embedded: Bool = false) {
         self.event = event
@@ -256,14 +257,13 @@ struct EventView: View {
                 
                 let isNip34 = event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft
                 if isNip34 {
-                    let repo_url = event.tags.first(where: { $0.first == "clone" })?.last ?? "https://github.com/example/repo.git"
-                    let d_tag = event.tags.first(where: { $0.first == "d" })?.last ?? "unknown-repo"
-
                     TagsView(tags: event.tags, onCloneTapped: { url in
-                        let repoNameFromURL = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
+                        let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
                         print("User tapped clone URL: \(url.absoluteString)")
-                        // When tapping a clone URL, we prioritize the d_tag for the repo_name if available, otherwise use the name from the URL
-                        self.repoToClone = (url: url.absoluteString, name: d_tag.isEmpty ? repoNameFromURL : d_tag)
+                        self.repoToClone = (url: url.absoluteString, name: repoName)
+                    }, onWebTapped: { url in
+                        print("User tapped web URL: \(url.absoluteString)")
+                        self.webViewURL = url
                     })
                     .onAppear {
                         // Automatically select the repo if there's only one clone URL
@@ -271,8 +271,9 @@ struct EventView: View {
                         print("Found \(cloneURLs.count) clone URLs for event \(event.id)")
                         if cloneURLs.count == 1 {
                             let url = cloneURLs[0]
-                            // When automatically selecting, we prioritize the d_tag for the repo_name if available, otherwise use the name from the URL
-                            self.repoToClone = (url: url.absoluteString, name: d_tag.isEmpty ? url.lastPathComponent.replacingOccurrences(of: ".git", with: "") : d_tag)
+                            let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
+                            print("Automatically selecting repository: \(url.absoluteString)")
+                            self.repoToClone = (url: url.absoluteString, name: repoName)
                         }
                     }
 
@@ -282,54 +283,11 @@ struct EventView: View {
                         GitView(repo_url: repoInfo.url, repo_name: repoInfo.name, commitsToFetch: commits)
                     }
                 }
-                
-                if !embedded {
-                    let blocks = event.blocks(damus.keypair.privkey).filter { block in
-                        guard case .mention(let mention) = block else {
-                            return false
-                        }
-                        
-                        guard case .event = mention.type else {
-                            return false
-                        }
-                        
-                        if mention.ref.key != "e" {
-                            return false
-                        }
-                        
-                        
-                        return true
-                    }
-                    
-                    /// MARK: - Preview
-                    if let firstBlock = blocks.first, case .mention(let mention) = firstBlock, mention.ref.key == "e" {
-                        BuilderEventView(damus: damus, event_id: mention.ref.id)
-                    }
-                }
-
-                if !embedded {
-                    if has_action_bar {
-                        if size == .selected {
-                            Text("\(format_date(event.created_at))")
-                                .padding(.top, 10)
-                                .font(.footnote)
-                                .foregroundColor(.gray)
-                            
-                            Divider()
-                                .padding([.bottom], 4)
-                        } else {
-                            Rectangle().frame(height: 2).opacity(0)
-                        }
-                        
-                        let bar = make_actionbar_model(ev: event, damus: damus)
-                        EventActionBar(damus_state: damus, event: event, bar: bar)
-                    }
-
-                    Divider()
-                        .padding([.top], 4)
-                }
             }
             .padding([.leading], 2)
+        }
+        .sheet(item: $webViewURL) { url in
+            WebView(url: url)
         }
         .contentShape(Rectangle())
         .background(event_validity_color(event.validity))
