@@ -60,8 +60,12 @@ struct WebView: UIViewRepresentable {
 class WebViewModel: ObservableObject {
     @Published var canGoBack = false
     @Published var canGoForward = false
+    @Published var repo_url: String? = nil
+    @Published var repo_name: String? = nil
+    @Published var commitsToFetch: [String] = []
     
     var webView: WKWebView?
+    var onCloneTapped: ((String, String, [String]) -> Void)?
 
     func goBack() {
         webView?.goBack()
@@ -73,5 +77,11 @@ class WebViewModel: ObservableObject {
 
     func refresh() {
         webView?.reload()
+    }
+    
+    func clone() {
+        if let url = repo_url, let name = repo_name {
+            onCloneTapped?(url, name, commitsToFetch)
+        }
     }
 }

@@ -131,6 +131,7 @@ struct EventView: View {
     let embedded: Bool
 
     @EnvironmentObject var webViewURL: WebViewURL
+    @EnvironmentObject var webViewModel: WebViewModel
     @State private var repoToClone: (url: String, name: String)?
 
     init(event: NostrEvent, highlight: Highlight, has_action_bar: Bool, damus: DamusState, show_friend_icon: Bool, size: EventViewKind = .normal, embedded: Bool = false) {
@@ -261,11 +262,21 @@ struct EventView: View {
                             let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
                             print("User tapped clone URL: \(url.absoluteString)")
                             self.repoToClone = (url: url.absoluteString, name: repoName)
-                        }, onWebTapped: { url in
-                            print("User tapped web URL: \(url.absoluteString)")
-                            self.webViewURL.url = url
-                        }, onDTapped: { d_tag in
-                            let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
+                                            }, onWebTapped: { url in
+                                                print("User tapped web URL: \(url.absoluteString)")
+                                                self.webViewURL.url = url
+                                                // Pass repo info to webViewModel for clone button
+                                                if let repoInfo = repoToClone {
+                                                    self.webViewModel.repo_url = repoInfo.url
+                                                    self.webViewModel.repo_name = repoInfo.name
+                                                    let commitTags = event.tags.filter { $0.first == "commit" || $0.first == "parent-commit" }
+                                                    self.webViewModel.commitsToFetch = commitTags.compactMap { $0.count > 1 ? $0[1] : nil }
+                                                } else {
+                                                    self.webViewModel.repo_url = nil
+                                                    self.webViewModel.repo_name = nil
+                                                    self.webViewModel.commitsToFetch = []
+                                                }
+                                            }, onDTapped: { d_tag in                            let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
                             if cloneURLs.count == 1 {
                                 let url = cloneURLs[0]
                                 print("User tapped d: tag, automatically selecting repository: \(url.absoluteString)")
