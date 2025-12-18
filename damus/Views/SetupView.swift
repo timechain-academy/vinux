@@ -49,7 +49,7 @@ struct SetupView: View {
                         EmptyView()
                     }
                     
-                    Image("logo-nobg")
+                    Image("icon")
                         .resizable()
                         .frame(width: 128.0, height: 128.0, alignment: .center)
                         .padding([.top], 20.0)

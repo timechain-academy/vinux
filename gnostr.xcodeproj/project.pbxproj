@@ -7,16 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2BB0926883594448B70C /* WebViewURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCA721581C64DD88D43 /* WebViewURL.swift */; };
 		3165648B295B70D500C64604 /* LinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3165648A295B70D500C64604 /* LinkView.swift */; };
 		3169CAE6294E69C000EE4006 /* EmptyTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3169CAE5294E69C000EE4006 /* EmptyTimelineView.swift */; };
 		3169CAED294FCCFC00EE4006 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3169CAEC294FCCFC00EE4006 /* Constants.swift */; };
 		31D2E847295218AF006D67F8 /* Shimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D2E846295218AF006D67F8 /* Shimmer.swift */; };
 		3ACBCB78295FE5C70037388A /* TimeAgoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACBCB77295FE5C70037388A /* TimeAgoTests.swift */; };
-		        4134044B978B49D488BA /* GnostrService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1090431BDB9F4AFCBAFD /* GnostrService.swift */; };
-		        7CF41C4E24814665A963 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E500E38DD0B64A48906A /* WebView.swift */; };
-        2BB0926883594448B70C /* WebViewURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCA721581C64DD88D43 /* WebViewURL.swift */; };
-        5CE1859E105F49B782EA /* KeyPressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E7725E2A254E40803A /* KeyPressView.swift */; };
-        8FD609C34D9B4908A115 /* RepoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4105A5E9AB5A42AC9178 /* RepoInfo.swift */; };		4B2C17B22EF370720074B8A8 /* MiniGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B12EF370720074B8A8 /* MiniGit */; };
+		4134044B978B49D488BA /* GnostrService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1090431BDB9F4AFCBAFD /* GnostrService.swift */; };
+		4B2C17B22EF370720074B8A8 /* MiniGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B12EF370720074B8A8 /* MiniGit */; };
 		4B2C17B42EF370720074B8A8 /* XGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B2C17B32EF370720074B8A8 /* XGit */; };
 		4B2C17B62EF370F00074B8A8 /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C17B52EF370E30074B8A8 /* Git.swift */; };
 		4C06670128FC7C5900038D2A /* RelayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06670028FC7C5900038D2A /* RelayView.swift */; };
@@ -142,7 +140,9 @@
 		4CEE2B02280B39E800AB5EEF /* EventActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE2B01280B39E800AB5EEF /* EventActionBar.swift */; };
 		4FE60CDD295E1C5E00105A1F /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FE60CDC295E1C5E00105A1F /* Wallet.swift */; };
 		5BAD0364A2CF4488A9D5 /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB482820B2EF4DD8BF20 /* TagsView.swift */; };
+		5CE1859E105F49B782EA /* KeyPressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E7725E2A254E40803A /* KeyPressView.swift */; };
 		6C7DE41F2955169800E66263 /* Vault in Frameworks */ = {isa = PBXBuildFile; productRef = 6C7DE41E2955169800E66263 /* Vault */; };
+		7CF41C4E24814665A963 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E500E38DD0B64A48906A /* WebView.swift */; };
 		990B13C117C5414ABB15 /* NipService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC75E3C5D73C4479B0AE /* NipService.swift */; };
 		BA693074295D649800ADDB87 /* UserSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA693073295D649800ADDB87 /* UserSettingsStore.swift */; };
 		BAB68BED29543FA3007BA466 /* SelectWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB68BEC29543FA3007BA466 /* SelectWalletView.swift */; };
@@ -168,11 +168,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		        1090431BDB9F4AFCBAFD /* GnostrService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GnostrService.swift; sourceTree = "<group>"; };
-		        E500E38DD0B64A48906A /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
-        CFCA721581C64DD88D43 /* WebViewURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewURL.swift; sourceTree = "<group>"; };
-        E4E7725E2A254E40803A /* KeyPressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPressView.swift; sourceTree = "<group>"; };
-        4105A5E9AB5A42AC9178 /* RepoInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepoInfo.swift; sourceTree = "<group>"; };		3165648A295B70D500C64604 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
+		1090431BDB9F4AFCBAFD /* GnostrService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GnostrService.swift; sourceTree = "<group>"; };
+		3165648A295B70D500C64604 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
 		3169CAE5294E69C000EE4006 /* EmptyTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyTimelineView.swift; sourceTree = "<group>"; };
 		3169CAEC294FCCFC00EE4006 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = damus/Util/Constants.swift; sourceTree = SOURCE_ROOT; };
 		31D2E846295218AF006D67F8 /* Shimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
@@ -338,6 +335,9 @@
 		AC75E3C5D73C4479B0AE /* NipService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NipService.swift; sourceTree = "<group>"; };
 		BA693073295D649800ADDB87 /* UserSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsStore.swift; sourceTree = "<group>"; };
 		BAB68BEC29543FA3007BA466 /* SelectWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectWalletView.swift; sourceTree = "<group>"; };
+		CFCA721581C64DD88D43 /* WebViewURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewURL.swift; sourceTree = "<group>"; };
+		E4E7725E2A254E40803A /* KeyPressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPressView.swift; sourceTree = "<group>"; };
+		E500E38DD0B64A48906A /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		E990020E2955F837003BBC5A /* EditMetadataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMetadataView.swift; sourceTree = "<group>"; };
 		E9E4ED0A295867B900DD7078 /* ThreadV2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadV2View.swift; sourceTree = "<group>"; };
 		EB482820B2EF4DD8BF20 /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
@@ -468,7 +468,7 @@
 				4C99737A28C92A9200E53835 /* ChatroomMetadata.swift */,
 				BA693073295D649800ADDB87 /* UserSettingsStore.swift */,
 				4FE60CDC295E1C5E00105A1F /* Wallet.swift */,
-                CFCA721581C64DD88D43 /* WebViewURL.swift */,
+				CFCA721581C64DD88D43 /* WebViewURL.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -519,9 +519,10 @@
 				E9E4ED0A295867B900DD7078 /* ThreadV2View.swift */,
 				4CB55EF2295E5D59007FD187 /* RecommendedRelayView.swift */,
 				4CB55EF4295E679D007FD187 /* UserRelaysView.swift */,
-				                EB482820B2EF4DD8BF20 /* TagsView.swift */,
-				                E500E38DD0B64A48906A /* WebView.swift */,
-                E4E7725E2A254E40803A /* KeyPressView.swift */,			);
+				EB482820B2EF4DD8BF20 /* TagsView.swift */,
+				E500E38DD0B64A48906A /* WebView.swift */,
+				E4E7725E2A254E40803A /* KeyPressView.swift */,
+			);
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -916,10 +917,11 @@
 				3169CAED294FCCFC00EE4006 /* Constants.swift in Sources */,
 				5BAD0364A2CF4488A9D5 /* TagsView.swift in Sources */,
 				990B13C117C5414ABB15 /* NipService.swift in Sources */,
-				                4134044B978B49D488BA /* GnostrService.swift in Sources */,
-				                7CF41C4E24814665A963 /* WebView.swift in Sources */,
-                2BB0926883594448B70C /* WebViewURL.swift in Sources */,
-                5CE1859E105F49B782EA /* KeyPressView.swift in Sources */,			);
+				4134044B978B49D488BA /* GnostrService.swift in Sources */,
+				7CF41C4E24814665A963 /* WebView.swift in Sources */,
+				2BB0926883594448B70C /* WebViewURL.swift in Sources */,
+				5CE1859E105F49B782EA /* KeyPressView.swift in Sources */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4CE6DEEF27F7A08200C66700 /* Sources */ = {
