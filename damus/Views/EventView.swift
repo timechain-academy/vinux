@@ -256,10 +256,14 @@ struct EventView: View {
                 
                 let isNip34 = event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft
                 if isNip34 {
+                    let repo_url = event.tags.first(where: { $0.first == "clone" })?.last ?? "https://github.com/example/repo.git"
+                    let d_tag = event.tags.first(where: { $0.first == "d" })?.last ?? "unknown-repo"
+
                     TagsView(tags: event.tags, onCloneTapped: { url in
-                        let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
+                        let repoNameFromURL = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
                         print("User tapped clone URL: \(url.absoluteString)")
-                        self.repoToClone = (url: url.absoluteString, name: repoName)
+                        // When tapping a clone URL, we prioritize the d_tag for the repo_name if available, otherwise use the name from the URL
+                        self.repoToClone = (url: url.absoluteString, name: d_tag.isEmpty ? repoNameFromURL : d_tag)
                     })
                     .onAppear {
                         // Automatically select the repo if there's only one clone URL
@@ -267,9 +271,8 @@ struct EventView: View {
                         print("Found \(cloneURLs.count) clone URLs for event \(event.id)")
                         if cloneURLs.count == 1 {
                             let url = cloneURLs[0]
-                            let repoName = url.lastPathComponent.replacingOccurrences(of: ".git", with: "")
-                            print("Automatically selecting repository: \(url.absoluteString)")
-                            self.repoToClone = (url: url.absoluteString, name: repoName)
+                            // When automatically selecting, we prioritize the d_tag for the repo_name if available, otherwise use the name from the URL
+                            self.repoToClone = (url: url.absoluteString, name: d_tag.isEmpty ? url.lastPathComponent.replacingOccurrences(of: ".git", with: "") : d_tag)
                         }
                     }
 
