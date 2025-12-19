@@ -17,6 +17,7 @@ class GnostrService {
     lazy var repository = GitRepository(localRepoLocation, credentialManager)
     
     func setup() {
+        print("GnostrService setting up with localRepoLocation: \(localRepoLocation)")
         if repository.exists() {
             fetch()
         } else {
@@ -32,7 +33,7 @@ class GnostrService {
     func fetch() {
         let allRemotes = repository.getRemotes()
         if let remoteOrigin = allRemotes.first {
-            print("Fetching gnostr repository from \(remoteOrigin.url ?? "unknown remote")")
+            print("Fetching gnostr repository from \(remoteOrigin.url)")
             repository.fetch(remoteOrigin)
         }
     }

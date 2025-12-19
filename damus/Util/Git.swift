@@ -101,11 +101,31 @@ struct GitView: View {
 
 
 
-        let localRepoLocation = documentURL.appendingPathComponent(repo_name)
+        
 
 
 
-        self._repo = StateObject(wrappedValue: GitRepository(localRepoLocation, credentialManager))
+        
+
+
+
+                let localRepoLocation = documentURL.appendingPathComponent(repo_name)
+
+
+
+        
+
+
+
+                self._repo = StateObject(wrappedValue: GitRepository(localRepoLocation, credentialManager))
+
+
+
+        
+
+
+
+                print("GitView initializing with localRepoLocation: \(localRepoLocation)")
 
 
 

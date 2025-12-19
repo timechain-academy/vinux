@@ -343,7 +343,7 @@ EventView: View {
                         .sheet(isPresented: $showGitRefPanel) {
                             if let activeGitRef = activeGitRef {
                                 let d_tag = event.tags.first(where: { $0.first == "d" })?.last ?? "unknown-repo"
-                                GitRefDetailView(repo_name: d_tag, refName: activeGitRef.refName, commitHash: activeGitRef.commitHash)
+                                GitRefDetailView(repo_name: d_tag, refName: activeGitRef.refName, commitHash: activeGitRef.commitHash, isPresented: $showGitRefPanel)
                             }
                         }
                 } else {

@@ -5,17 +5,33 @@ struct GitRefDetailView: View {
     let repo_name: String
     let refName: String
     let commitHash: String
+    @Binding var isPresented: Bool // New binding for dismissal
     
     @StateObject private var repo: GitRepository
-    @State private var commitMessage: String = "Loading..."
+    @State private var commitDetails: CommitDetails? = nil
 
-    init(repo_name: String, refName: String, commitHash: String) {
+    private static let itemFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+    }()
+
+    struct CommitDetails {
+        let message: String
+        let author: String
+        let date: Date
+    }
+
+    init(repo_name: String, refName: String, commitHash: String, isPresented: Binding<Bool>) {
         self.repo_name = repo_name
         self.refName = refName
         self.commitHash = commitHash
+        self._isPresented = isPresented
         
         let localRepoLocation = documentURL.appendingPathComponent(repo_name)
         self._repo = StateObject(wrappedValue: GitRepository(localRepoLocation, credentialManager))
+        print("GitRefDetailView initializing with localRepoLocation: \(localRepoLocation)")
     }
 
     var body: some View {
@@ -30,8 +46,19 @@ struct GitRefDetailView: View {
             
             Divider()
             
-            Text(commitMessage)
-                .font(.body)
+            if let details = commitDetails {
+                Text(details.message)
+                    .font(.body)
+                Text("Author: \(details.author)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("Date: \(details.date, formatter: Self.itemFormatter)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } else {
+                Text("Loading commit details...")
+                    .font(.body)
+            }
             
             Spacer()
         }
@@ -41,9 +68,13 @@ struct GitRefDetailView: View {
             if !inProgress {
                 self.repo.updateCommitGraph()
                 if let commit = self.repo.commitGraph.commits.first(where: { $0.id.description == self.commitHash }) {
-                    self.commitMessage = commit.message
+                    self.commitDetails = CommitDetails(
+                        message: commit.message,
+                        author: commit.author.name,
+                        date: commit.time
+                    )
                 } else {
-                    self.commitMessage = "Commit not found after fetching."
+                    self.commitDetails = CommitDetails(message: "Commit not found after fetching.", author: "N/A", date: Date())
                 }
             }
         }
@@ -53,7 +84,7 @@ struct GitRefDetailView: View {
         repo.open()
         
         if !repo.exists() {
-            self.commitMessage = "Repository not found locally. Please clone it first."
+            self.commitDetails = CommitDetails(message: "Repository not found locally. Please clone it first.", author: "N/A", date: Date())
             return
         }
 
@@ -63,15 +94,19 @@ struct GitRefDetailView: View {
         
         if let commit = repo.commitGraph.commits.first(where: { $0.id.description == commitHash }) {
             print("Commit found: \(commit.id.description)")
-            self.commitMessage = commit.message
+            self.commitDetails = CommitDetails(
+                message: commit.message,
+                author: commit.author.name,
+                date: commit.time
+            )
         } else {
             print("Commit with hash \(commitHash) not found locally.")
-            self.commitMessage = "Commit not found locally. Fetching from remote..."
+            self.commitDetails = CommitDetails(message: "Commit not found locally. Fetching from remote...", author: "N/A", date: Date())
             let allRemotes = repo.getRemotes()
             if let remoteOrigin = allRemotes.first {
                 repo.fetch(remoteOrigin)
             } else {
-                self.commitMessage = "Commit not found and no remote to fetch from."
+                self.commitDetails = CommitDetails(message: "Commit not found and no remote to fetch from.", author: "N/A", date: Date())
             }
         }
     }

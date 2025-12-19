@@ -17,6 +17,7 @@ class NipService {
     lazy var repository = GitRepository(localRepoLocation, credentialManager)
     
     func setup() {
+        print("NipService setting up with localRepoLocation: \(localRepoLocation)")
         if repository.exists() {
             fetch()
         } else {
