@@ -180,6 +180,31 @@ struct EventView: View {
         }.resume()
     }
 
+    private static func testNip11Support(for url: URL, completion: @escaping (Bool) -> Void) {
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET" // Use GET
+        request.setValue("application/nostr+json", forHTTPHeaderField: "Accept") // Check for JSON support first
+
+        URLSession.shared.dataTask(with: request) { _, response, error in
+            guard let httpResponse = response as? HTTPURLResponse, error == nil else {
+                completion(false)
+                return
+            }
+
+            // A NIP-11 compliant relay should respond with application/nostr+json
+            if let contentType = httpResponse.allHeaderFields["Content-Type"] as? String,
+               contentType.contains("application/nostr+json") {
+                completion(true)
+            } else {
+                // For relays that might not correctly set the content type but are NIP-11 compliant,
+                // we can also check for a successful status code and assume support.
+                // Or we can try a second request with Accept: text/html and check for that content type.
+                // For simplicity, we'll just check for the expected content type for now.
+                completion(false)
+            }
+        }.resume()
+    }
+
     var body: some View {
         return Group {
             if event.known_kind == .boost, let inner_ev = event.inner_event {
@@ -279,21 +304,57 @@ struct EventView: View {
                             let commitTags = event.tags.filter { $0.first == "commit" || $0.first == "parent-commit" }
                             self.webViewModel.commitsToFetch = commitTags.compactMap { $0.count > 1 ? $0[1] : nil }
                             self.webViewModel.clone() // Directly initiate clone from webViewModel
-                                            }, onWebTapped: { url in
-                                                print("User tapped web URL: \(url.absoluteString)")
-                                                self.webViewURL.url = url
-                                                // Pass repo info to webViewModel for clone button
-                                                if let repoInfo = repoToClone {
-                                                    self.webViewModel.repo_url = repoInfo.url
-                                                    self.webViewModel.repo_name = repoInfo.name
-                                                    let commitTags = event.tags.filter { $0.first == "commit" || $0.first == "parent-commit" }
-                                                    self.webViewModel.commitsToFetch = commitTags.compactMap { $0.count > 1 ? $0[1] : nil }
-                                                } else {
-                                                    self.webViewModel.repo_url = nil
-                                                    self.webViewModel.repo_name = nil
-                                                    self.webViewModel.commitsToFetch = []
+                        }, onWebTapped: { url in
+                            print("User tapped web URL: \(url.absoluteString)")
+                            self.webViewURL.url = url
+                            self.webViewModel.htmlContent = nil
+                            // Existing repo info logic for WebView clone button
+                            if let repoInfo = self.repoToClone {
+                                self.webViewModel.repo_url = repoInfo.url
+                                self.webViewModel.repo_name = repoInfo.name
+                                let commitTags = event.tags.filter { $0.first == "commit" || $0.first == "parent-commit" }
+                                self.webViewModel.commitsToFetch = commitTags.compactMap { $0.count > 1 ? $0[1] : nil }
+                            } else {
+                                self.webViewModel.repo_url = nil
+                                self.webViewModel.repo_name = nil
+                                self.webViewModel.commitsToFetch = []
+                            }
+                        }, onRelaysTapped: { url in
+                            // New logic for relays
+                            EventView.testNip11Support(for: url) { supportsNip11 in
+                                if supportsNip11 {
+                                    let nipPattern = "https://raw.githubusercontent.com/nostr-protocol/nips/refs/heads/master/(\\d+).md"
+                                    if url.absoluteString.range(of: nipPattern, options: .regularExpression) != nil {
+                                        // It's a NIP document
+                                        EventView.fetchContent(from: url) { markdownContent in
+                                            if let markdown = markdownContent {
+                                                let html = Markdown.parseToHTML(content: markdown)
+                                                DispatchQueue.main.async {
+                                                    self.webViewModel.htmlContent = html
+                                                    self.webViewURL.url = nil
                                                 }
-                                            }, onDTapped: { d_tag in                            let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
+                                            } else {
+                                                // Fallback to loading URL
+                                                DispatchQueue.main.async {
+                                                    self.webViewURL.url = url
+                                                    self.webViewModel.htmlContent = nil
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        // It's a regular relay URL with NIP-11 support
+                                        DispatchQueue.main.async {
+                                            self.webViewURL.url = url
+                                            self.webViewModel.htmlContent = nil
+                                        }
+                                    }
+                                } else {
+                                    print("Relay does not support NIP-11: \(url.absoluteString)")
+                                    // Do nothing
+                                }
+                            }
+                        }, onDTapped: { d_tag in
+                            let cloneURLs = event.tags.filter { $0.first == "clone" && $0.count > 1 }.compactMap { URL(string: $0[1]) }
                             if cloneURLs.count == 1 {
                                 let url = cloneURLs[0]
                                 print("User tapped d: tag, automatically cloning repository: \(url.absoluteString)")
