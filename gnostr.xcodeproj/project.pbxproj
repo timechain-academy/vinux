@@ -17,7 +17,6 @@
 		4B1654932EF4AF5700A9DD09 /* GnostrGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B1654922EF4AF5700A9DD09 /* GnostrGit */; };
 		4B1654952EF4AF5700A9DD09 /* XGit in Frameworks */ = {isa = PBXBuildFile; productRef = 4B1654942EF4AF5700A9DD09 /* XGit */; };
 		4B1654972EF5C89C00A9DD09 /* RelayInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B1654962EF5C89C00A9DD09 /* RelayInformation.swift */; };
-		4B1654992EF5C8B000A9DD09 /* RepoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B1654982EF5C8B000A9DD09 /* RepoInfo.swift */; };
 		4B2C17B62EF370F00074B8A8 /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C17B52EF370E30074B8A8 /* Git.swift */; };
 		4C06670128FC7C5900038D2A /* RelayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06670028FC7C5900038D2A /* RelayView.swift */; };
 		4C06670428FC7EC500038D2A /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4C06670328FC7EC500038D2A /* Kingfisher */; };
@@ -177,7 +176,6 @@
 		31D2E846295218AF006D67F8 /* Shimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
 		3ACBCB77295FE5C70037388A /* TimeAgoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAgoTests.swift; sourceTree = "<group>"; };
 		4B1654962EF5C89C00A9DD09 /* RelayInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayInformation.swift; sourceTree = "<group>"; };
-		4B1654982EF5C8B000A9DD09 /* RepoInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepoInfo.swift; sourceTree = "<group>"; };
 		4B2C17B52EF370E30074B8A8 /* Git.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Git.swift; sourceTree = "<group>"; };
 		4C06670028FC7C5900038D2A /* RelayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayView.swift; sourceTree = "<group>"; };
 		4C06670528FCB08600038D2A /* ImageCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCarousel.swift; sourceTree = "<group>"; };
@@ -443,7 +441,6 @@
 		4C0A3F8D280F63FF000448DE /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				4B1654982EF5C8B000A9DD09 /* RepoInfo.swift */,
 				4B1654962EF5C89C00A9DD09 /* RelayInformation.swift */,
 				4C0A3F8E280F640A000448DE /* ThreadModel.swift */,
 				4C0A3F92280F66F5000448DE /* ReplyMap.swift */,
@@ -812,7 +809,6 @@
 				4C285C86283892E7008A31F1 /* CreateAccountModel.swift in Sources */,
 				4C64987C286D03E000EAE2B3 /* DirectMessagesView.swift in Sources */,
 				4C363A8C28236B92006E126D /* PubkeyView.swift in Sources */,
-				4B1654992EF5C8B000A9DD09 /* RepoInfo.swift in Sources */,
 				4C5C7E68284ED36500A22DF5 /* SearchHomeModel.swift in Sources */,
 				4C75EFB728049D990006080F /* RelayPool.swift in Sources */,
 				4C3EA67728FF7A9800C48A62 /* talstr.c in Sources */,
