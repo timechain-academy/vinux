@@ -55,8 +55,8 @@ struct ConfigView: View {
         ZStack(alignment: .leading) {
             Form {
                 Section("Relays") {
-                    List(Array(relays), id: \.url) { relay in
-                        RelayView(state: state, relay: relay.url.absoluteString)
+                    List(state.pool.relays) { relay in
+                        RelayView(state: state, relay: relay)
                     }
                 }
                 

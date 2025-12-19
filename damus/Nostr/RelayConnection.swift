@@ -13,7 +13,7 @@ enum NostrConnectionEvent {
     case nostr_event(NostrResponse)
 }
 
-class RelayConnection: WebSocketDelegate {
+class RelayConnection: WebSocketDelegate, ObservableObject {
     var isConnected: Bool = false
     var isConnecting: Bool = false
     var isReconnecting: Bool = false
@@ -21,6 +21,9 @@ class RelayConnection: WebSocketDelegate {
     var socket: WebSocket
     var handleEvent: (NostrConnectionEvent) -> ()
     let url: URL
+    @Published var pingTime: TimeInterval?
+    private var lastPingTime: TimeInterval?
+    private var pingTimer: Timer?
 
     init(url: URL, handleEvent: @escaping (NostrConnectionEvent) -> ()) {
         self.url = url
@@ -53,8 +56,22 @@ class RelayConnection: WebSocketDelegate {
         last_connection_attempt = Date().timeIntervalSince1970
         socket.connect()
     }
+    
+    func startPingTimer() {
+        pingTimer?.invalidate()
+        pingTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
+            self?.sendPing()
+        }
+    }
+
+    func sendPing() {
+        lastPingTime = Date().timeIntervalSince1970
+        socket.write(ping: Data())
+    }
 
     func disconnect() {
+        pingTimer?.invalidate()
+        pingTimer = nil
         socket.disconnect()
         isConnected = false
         isConnecting = false
@@ -74,13 +91,22 @@ class RelayConnection: WebSocketDelegate {
         case .connected:
             self.isConnected = true
             self.isConnecting = false
+            startPingTimer() // Start pinging on connect
 
         case .disconnected:
             self.isConnecting = false
             self.isConnected = false
+            pingTimer?.invalidate()
+            pingTimer = nil
             if self.isReconnecting {
                 self.isReconnecting = false
                 self.connect()
+            }
+        
+        case .pong:
+            if let lastPingTime = self.lastPingTime {
+                self.pingTime = Date().timeIntervalSince1970 - lastPingTime
+                self.lastPingTime = nil
             }
 
         case .cancelled: fallthrough

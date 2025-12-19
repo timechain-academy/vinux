@@ -9,16 +9,15 @@ import SwiftUI
 
 struct RelayView: View {
     let state: DamusState
-    let relay: String
+    @ObservedObject var relay: Relay
     
     let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
     @State var conn_color: Color = .gray
     @State private var isSelected: Bool = false
-    @State private var relayInfo: RelayInformation? // This was removed by mistake
+    @State private var relayInfo: RelayInformation?
 
     func fetchRelayInfo() {
-        guard let url = URL(string: relay) else { return }
-        
+        let url = relay.descriptor.url
         var request = URLRequest(url: url)
         request.setValue("application/nostr+json", forHTTPHeaderField: "Accept")
 
@@ -37,17 +36,13 @@ struct RelayView: View {
     }
     
     func update_connection_color() {
-        for relay in state.pool.relays {
-            if relay.id == self.relay {
-                let c = relay.connection
-                if c.isConnected {
-                    conn_color = .green
-                } else if c.isConnecting || c.isReconnecting {
-                    conn_color = .yellow
-                } else {
-                    conn_color = .red
-                }
-            }
+        let c = relay.connection
+        if c.isConnected {
+            conn_color = .green
+        } else if c.isConnecting || c.isReconnecting {
+            conn_color = .yellow
+        } else {
+            conn_color = .red
         }
     }
     
@@ -57,10 +52,16 @@ struct RelayView: View {
                 Circle()
                     .frame(width: 8.0, height: 8.0)
                     .foregroundColor(conn_color)
-                Text(relayInfo?.name ?? relay)
+                Text(relayInfo?.name ?? relay.descriptor.url.absoluteString)
                     .font(isSelected ? .title2 : .headline)
+                Spacer()
+                if let pingTime = relay.connection.pingTime {
+                    Text(String(format: "%.0f ms", pingTime * 1000))
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
             }
-            Text(relay)
+            Text(relay.descriptor.url.absoluteString)
                 .font(.caption)
                 .foregroundColor(.gray)
             
@@ -123,7 +124,7 @@ struct RelayView: View {
             }
         }
         .contextMenu {
-            CopyAction(relay: relay)
+            CopyAction(relay: relay.descriptor.url.absoluteString)
             
             if let privkey = state.keypair.privkey {
                 RemoveAction(privkey: privkey)
@@ -146,7 +147,7 @@ struct RelayView: View {
             }
             
             let descriptors = state.pool.descriptors
-            guard let new_ev = remove_relay( ev: ev, current_relays: descriptors, privkey: privkey, relay: relay) else {
+            guard let new_ev = remove_relay(ev: ev, current_relays: descriptors, privkey: privkey, relay: relay.descriptor.url.absoluteString) else {
                 return
             }
             
@@ -161,6 +162,10 @@ struct RelayView: View {
 
 struct RelayView_Previews: PreviewProvider {
     static var previews: some View {
-        RelayView(state: test_damus_state(), relay: "wss://relay.damus.io", conn_color: .red)
+        let url = URL(string: "wss://relay.damus.io")!
+        let desc = RelayDescriptor(url: url, info: .rw)
+        let conn = RelayConnection(url: url) { event in }
+        let relay = Relay(descriptor: desc, connection: conn)
+        RelayView(state: test_damus_state(), relay: relay, conn_color: .red)
     }
 }

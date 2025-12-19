@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUICore
 
 struct RelayInfo: Codable {
     let read: Bool
@@ -24,9 +25,9 @@ enum RelayFlags: Int {
     case broken = 1
 }
 
-class Relay: Identifiable {
+class Relay: Identifiable, ObservableObject {
     let descriptor: RelayDescriptor
-    let connection: RelayConnection
+    @ObservedObject var connection: RelayConnection
     
     var last_pong: UInt32
     var flags: Int
