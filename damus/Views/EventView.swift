@@ -205,6 +205,14 @@ struct EventView: View {
         }.resume()
     }
 
+    private func parseRelays(_ relaysString: String) -> [String] {
+        if let data = relaysString.data(using: .utf8),
+           let array = try? JSONDecoder().decode([String].self, from: data) {
+            return array
+        }
+        return [relaysString]
+    }
+
     var body: some View {
         return Group {
             if event.known_kind == .boost, let inner_ev = event.inner_event {
@@ -319,38 +327,20 @@ struct EventView: View {
                                 self.webViewModel.repo_name = nil
                                 self.webViewModel.commitsToFetch = []
                             }
-                        }, onRelaysTapped: { url in
-                            // New logic for relays
-                            EventView.testNip11Support(for: url) { supportsNip11 in
-                                if supportsNip11 {
-                                    let nipPattern = "https://raw.githubusercontent.com/nostr-protocol/nips/refs/heads/master/(\\d+).md"
-                                    if url.absoluteString.range(of: nipPattern, options: .regularExpression) != nil {
-                                        // It's a NIP document
-                                        EventView.fetchContent(from: url) { markdownContent in
-                                            if let markdown = markdownContent {
-                                                let html = Markdown.parseToHTML(content: markdown)
-                                                DispatchQueue.main.async {
-                                                    self.webViewModel.htmlContent = html
-                                                    self.webViewURL.url = nil
-                                                }
-                                            } else {
-                                                // Fallback to loading URL
-                                                DispatchQueue.main.async {
-                                                    self.webViewURL.url = url
-                                                    self.webViewModel.htmlContent = nil
-                                                }
+                        }, onRelaysTapped: { relaysString in
+                            let relays = self.parseRelays(relaysString)
+                            for relay in relays {
+                                if let url = URL(string: relay) {
+                                    // Add the relay
+                                    if let privkey = self.damus.keypair.privkey, let ev = self.damus.contacts.event {
+                                        if let new_ev = add_relay(ev: ev, privkey: privkey, current_relays: self.damus.pool.descriptors, relay: url.absoluteString, info: .rw) {
+                                            if (try? self.damus.pool.add_relay(url, info: .rw)) != nil {
+                                                self.damus.pool.connect(to: [url.absoluteString])
+                                                process_contact_event(pool: self.damus.pool, contacts: self.damus.contacts, pubkey: self.damus.pubkey, ev: new_ev)
+                                                self.damus.pool.send(.event(new_ev))
                                             }
                                         }
-                                    } else {
-                                        // It's a regular relay URL with NIP-11 support
-                                        DispatchQueue.main.async {
-                                            self.webViewURL.url = url
-                                            self.webViewModel.htmlContent = nil
-                                        }
                                     }
-                                } else {
-                                    print("Relay does not support NIP-11: \(url.absoluteString)")
-                                    // Do nothing
                                 }
                             }
                         }, onDTapped: { d_tag in

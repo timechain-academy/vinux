@@ -11,7 +11,7 @@ struct TagsView: View {
     let tags: [[String]]
     var onCloneTapped: ((URL) -> Void)?
     var onWebTapped: ((URL) -> Void)?
-    var onRelaysTapped: ((URL) -> Void)? // Add this
+    var onRelaysTapped: ((String) -> Void)? // Add this
     var onDTapped: ((String) -> Void)?
     var onSearchTapped: ((String) -> Void)? // Add this line
 
@@ -79,9 +79,16 @@ struct TagsView: View {
                 tagContent
             }
             .buttonStyle(.plain)
-        } else if (tag.first == "web" || tag.first == "source" || tag.first == "relays"), tag.count > 1, let url = URL(string: tag[1]), let onWebTapped = onWebTapped {
+        } else if (tag.first == "web" || tag.first == "source"), tag.count > 1, let url = URL(string: tag[1]), let onWebTapped = onWebTapped {
             Button(action: {
                 onWebTapped(url)
+            }) {
+                tagContent
+            }
+            .buttonStyle(.plain)
+        } else if tag.first == "relays", tag.count > 1, let onRelaysTapped = onRelaysTapped {
+            Button(action: {
+                onRelaysTapped(tag[1])
             }) {
                 tagContent
             }
