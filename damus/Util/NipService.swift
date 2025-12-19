@@ -12,7 +12,7 @@ class NipService {
     let repo_url = "https://github.com/nostr-protocol/nips.git"
     let repo_name = "nips"
     
-    let documentURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+    let documentURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
     lazy var localRepoLocation = documentURL.appendingPathComponent(repo_name)
     lazy var repository = GitRepository(localRepoLocation, credentialManager)
     
