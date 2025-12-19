@@ -136,7 +136,27 @@ EventView: View {
     @EnvironmentObject var webViewModel: WebViewModel
     @EnvironmentObject var gitOperationTracker: GitOperationTracker // Add this line
     @State private var repoToClone: (url: String, name: String)?
+    @State private var announcementEvent: NostrEvent?
 
+    func fetchAnnouncementEvent() {
+        guard event.known_kind == .repository_state_announcement else { return }
+        
+        if let d_tag = event.tags.first(where: { $0.first == "d" })?.last {
+            let filter = NostrFilter(kinds: [NostrKind.repository_announcement.rawValue], limit: 1, tags: ["d": [d_tag]])
+            let sub_id = UUID().description
+            
+            damus.pool.register_handler(sub_id: sub_id) { relay_id, ev in
+                if case .nostr_event(let nostr_response) = ev, case .event(_, let announcement) = nostr_response {
+                    DispatchQueue.main.async {
+                        self.announcementEvent = announcement
+                    }
+                    self.damus.pool.unsubscribe(sub_id: sub_id)
+                }
+            }
+            damus.pool.send(.subscribe(.init(filters: [filter], sub_id: sub_id)))
+        }
+    }
+    
     init(event: NostrEvent, highlight: Highlight, has_action_bar: Bool, damus: DamusState, show_friend_icon: Bool, size: EventViewKind = .normal, embedded: Bool = false) {
         self.event = event
         self.highlight = highlight
@@ -300,8 +320,15 @@ EventView: View {
                 let should_show_img = should_show_images(contacts: damus.contacts, ev: event, our_pubkey: damus.pubkey)
                 
                 if event.known_kind == .repository_state_announcement {
+                    if let announcement = announcementEvent {
+                        EventView(damus: damus, event: announcement, show_friend_icon: show_friend_icon, size: .small, embedded: true)
+                    }
+                    
                     let git_refs = event.tags.filter { $0.count > 1 && ($0[0].starts(with: "refs/") || $0[0] == "HEAD") }
                     GitRefsView(tags: git_refs)
+                        .onAppear {
+                            fetchAnnouncementEvent()
+                        }
                 } else {
                     NoteContentView(privkey: damus.keypair.privkey, event: event, profiles: damus.profiles, show_images: should_show_img, artifacts: .just_content(content), size: self.size)
                         .frame(maxWidth: .infinity, alignment: .leading)
