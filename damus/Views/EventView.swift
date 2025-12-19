@@ -137,6 +137,7 @@ EventView: View {
     @EnvironmentObject var gitOperationTracker: GitOperationTracker // Add this line
     @State private var repoToClone: (url: String, name: String)?
     @State private var announcementEvent: NostrEvent?
+    @State private var combinedGitRefs: [[String]] = [] // New state
 
     func fetchAnnouncementEvent() {
         guard event.known_kind == .repository_state_announcement else { return }
@@ -149,6 +150,8 @@ EventView: View {
                 if case .nostr_event(let nostr_response) = ev, case .event(_, let announcement) = nostr_response {
                     DispatchQueue.main.async {
                         self.announcementEvent = announcement
+                        let announcement_refs = announcement.tags.filter { $0.count > 1 && ($0[0].starts(with: "refs/") || $0[0] == "HEAD") }
+                        self.combinedGitRefs.append(contentsOf: announcement_refs)
                     }
                     self.damus.pool.unsubscribe(sub_id: sub_id)
                 }
@@ -317,19 +320,21 @@ EventView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
-                let should_show_img = should_show_images(contacts: damus.contacts, ev: event, our_pubkey: damus.pubkey)
-                
                 if event.known_kind == .repository_state_announcement {
                     if let announcement = announcementEvent {
-                        EventView(damus: damus, event: announcement, show_friend_icon: show_friend_icon, size: .small, embedded: true)
+                        let announcement_should_show_img = should_show_images(contacts: damus.contacts, ev: announcement, our_pubkey: damus.pubkey)
+                        NoteContentView(privkey: damus.keypair.privkey, event: announcement, profiles: damus.profiles, show_images: announcement_should_show_img, artifacts: .just_content(announcement.get_content(damus.keypair.privkey)), size: .small)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .allowsHitTesting(!embedded)
                     }
                     
-                    let git_refs = event.tags.filter { $0.count > 1 && ($0[0].starts(with: "refs/") || $0[0] == "HEAD") }
-                    GitRefsView(tags: git_refs)
+                    GitRefsView(tags: combinedGitRefs)
                         .onAppear {
+                            self.combinedGitRefs = event.tags.filter { $0.count > 1 && ($0[0].starts(with: "refs/") || $0[0] == "HEAD") }
                             fetchAnnouncementEvent()
                         }
                 } else {
+                    let should_show_img = should_show_images(contacts: damus.contacts, ev: event, our_pubkey: damus.pubkey)
                     NoteContentView(privkey: damus.keypair.privkey, event: event, profiles: damus.profiles, show_images: should_show_img, artifacts: .just_content(content), size: self.size)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .allowsHitTesting(!embedded)
