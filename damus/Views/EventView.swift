@@ -299,9 +299,14 @@ EventView: View {
 
                 let should_show_img = should_show_images(contacts: damus.contacts, ev: event, our_pubkey: damus.pubkey)
                 
-                NoteContentView(privkey: damus.keypair.privkey, event: event, profiles: damus.profiles, show_images: should_show_img, artifacts: .just_content(content), size: self.size)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .allowsHitTesting(!embedded)
+                if event.known_kind == .repository_state_announcement {
+                    let git_refs = event.tags.filter { $0.count > 1 && ($0[0].starts(with: "refs/") || $0[0] == "HEAD") }
+                    GitRefsView(tags: git_refs)
+                } else {
+                    NoteContentView(privkey: damus.keypair.privkey, event: event, profiles: damus.profiles, show_images: should_show_img, artifacts: .just_content(content), size: self.size)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .allowsHitTesting(!embedded)
+                }
                 
                 let isNip34 = event.known_kind == .repository_announcement || event.known_kind == .repository_state_announcement || event.known_kind == .repository_patch || event.known_kind == .repository_issue_draft
                 if isNip34 {
@@ -581,5 +586,26 @@ struct EventView_Previews: PreviewProvider {
                 size: .selected
             )
         }
+    }
+}
+
+struct GitRefsView: View {
+    let tags: [[String]]
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Git References").font(.headline)
+            ForEach(tags, id: \.self) { tag in
+                if tag.count > 1 {
+                    HStack {
+                        Text(tag[0]).font(.caption).bold()
+                        Text(tag[1]).font(.caption.monospaced())
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
     }
 }
