@@ -117,6 +117,15 @@ struct damusApp: App {
                         .onAppear {
                             nipService.setup()
                             gnostrService.setup()
+                            
+                            // --- TEMPORARY WEBSOCKET TEST ---
+                            let testURL = URL(string: "ws://127.0.0.1:8080")!
+                            let testConnection = RelayConnection(url: testURL) { event in
+                                print("WebSocket Test Event: \(event)")
+                            }
+                            testConnection.connect()
+                            // --- END TEMPORARY WEBSOCKET TEST ---
+
                             webViewModel.onCloneTapped = { url, name, commits in
                                 gitOperationTracker.startGitOperation(repo_url: url, repo_name: name, commitsToFetch: commits)
                                 self.webViewURL.url = nil // Dismiss the WebView after initiating clone
