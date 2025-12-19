@@ -52,7 +52,7 @@ struct RelayView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 5) {
             HStack {
                 Circle()
                     .frame(width: 8.0, height: 8.0)
@@ -60,32 +60,51 @@ struct RelayView: View {
                 Text(relayInfo?.name ?? relay)
                     .font(isSelected ? .title2 : .headline)
             }
-            Text(relay) // Always display the URL
+            Text(relay)
                 .font(.caption)
                 .foregroundColor(.gray)
             
             if isSelected {
                 if let info = relayInfo {
-                    if let description = info.description {
+                    if let description = info.description, !description.isEmpty {
                         Text(description)
-                            .font(.body) // Enlarge font
+                            .font(.body)
+                            .padding(.top, 4)
                     }
                     if let supportedNips = info.supportedNips {
                         Text("NIPs: \(supportedNips.map(String.init).joined(separator: ", "))")
-                            .font(.subheadline) // Enlarge font
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                            .padding(.top, 2)
+                    }
+                    if let contact = info.contact, !contact.isEmpty {
+                        Text("Contact: \(contact)")
+                            .font(.footnote)
                             .foregroundColor(.gray)
                     }
+                    if let software = info.software, !software.isEmpty {
+                        Text("Software: \(software)")
+                            .font(.footnote)
+                            .foregroundColor(.gray)
+                    }
+                    if let version = info.version, !version.isEmpty {
+                        Text("Version: \(version)")
+                            .font(.footnote)
+                            .foregroundColor(.gray)
+                    }
+                } else {
+                    ProgressView() // Show a loading indicator while fetching
                 }
             } else {
-                if let info = relayInfo {
-                    if let description = info.description {
-                        Text(description)
-                            .font(.footnote)
-                            .lineLimit(1) // Show only one line when not selected
-                    }
+                if let description = relayInfo?.description, !description.isEmpty {
+                    Text(description)
+                        .font(.footnote)
+                        .lineLimit(1)
                 }
             }
         }
+        .padding(.vertical, 5)
+        .contentShape(Rectangle())
         .onTapGesture {
             withAnimation {
                 self.isSelected.toggle()
