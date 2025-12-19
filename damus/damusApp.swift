@@ -178,6 +178,13 @@ struct damusApp: App {
                             .padding()
                             
                             WebView(url: url, viewModel: webViewModel)
+                            
+                            Divider()
+                            
+                            HStack {
+                                Text("Bottom Toolbar")
+                            }
+                            .padding()
                         }
                         .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.8)
                         .background(Color(.systemBackground))
