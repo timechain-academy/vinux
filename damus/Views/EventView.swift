@@ -121,7 +121,8 @@ struct BuilderEventView: View {
     }
 }
 
-struct EventView: View {
+struct
+EventView: View {
     let event: NostrEvent
     let highlight: Highlight
     let has_action_bar: Bool
@@ -210,7 +211,8 @@ struct EventView: View {
            let array = try? JSONDecoder().decode([String].self, from: data) {
             return array
         }
-        return [relaysString]
+        // Fallback to splitting by comma
+        return relaysString.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
     }
 
     var body: some View {
