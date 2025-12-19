@@ -57,9 +57,13 @@ struct RelayView: View {
                 Circle()
                     .frame(width: 8.0, height: 8.0)
                     .foregroundColor(conn_color)
-                Text(relayInfo?.name ?? relay) // Display name from relayInfo if available
-                    .font(isSelected ? .title2 : .headline) // Enlarge font when selected
+                Text(relayInfo?.name ?? relay)
+                    .font(isSelected ? .title2 : .headline)
             }
+            Text(relay) // Always display the URL
+                .font(.caption)
+                .foregroundColor(.gray)
+            
             if isSelected {
                 if let info = relayInfo {
                     if let description = info.description {
