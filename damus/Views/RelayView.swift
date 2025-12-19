@@ -13,7 +13,8 @@ struct RelayView: View {
     
     let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
     @State var conn_color: Color = .gray
-    @State private var relayInfo: RelayInformation?
+    @State private var isSelected: Bool = false
+    @State private var relayInfo: RelayInformation? // This was removed by mistake
 
     func fetchRelayInfo() {
         guard let url = URL(string: relay) else { return }
@@ -57,18 +58,33 @@ struct RelayView: View {
                     .frame(width: 8.0, height: 8.0)
                     .foregroundColor(conn_color)
                 Text(relayInfo?.name ?? relay) // Display name from relayInfo if available
-                    .font(.headline)
+                    .font(isSelected ? .title2 : .headline) // Enlarge font when selected
             }
-            if let info = relayInfo {
-                if let description = info.description {
-                    Text(description)
-                        .font(.footnote)
+            if isSelected {
+                if let info = relayInfo {
+                    if let description = info.description {
+                        Text(description)
+                            .font(.body) // Enlarge font
+                    }
+                    if let supportedNips = info.supportedNips {
+                        Text("NIPs: \(supportedNips.map(String.init).joined(separator: ", "))")
+                            .font(.subheadline) // Enlarge font
+                            .foregroundColor(.gray)
+                    }
                 }
-                if let supportedNips = info.supportedNips {
-                    Text("NIPs: \(supportedNips.map(String.init).joined(separator: ", "))")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+            } else {
+                if let info = relayInfo {
+                    if let description = info.description {
+                        Text(description)
+                            .font(.footnote)
+                            .lineLimit(1) // Show only one line when not selected
+                    }
                 }
+            }
+        }
+        .onTapGesture {
+            withAnimation {
+                self.isSelected.toggle()
             }
         }
         .onReceive(timer) { _ in
