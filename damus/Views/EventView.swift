@@ -138,6 +138,8 @@ EventView: View {
     @State private var repoToClone: (url: String, name: String)?
     @State private var announcementEvent: NostrEvent?
     @State private var combinedGitRefs: [[String]] = [] // New state
+    @State private var activeGitRef: (refName: String, commitHash: String)?
+    @State private var showGitRefPanel: Bool = false
 
     func fetchAnnouncementEvent() {
         guard event.known_kind == .repository_state_announcement else { return }
@@ -328,10 +330,21 @@ EventView: View {
                             .allowsHitTesting(!embedded)
                     }
                     
-                    GitRefsView(tags: combinedGitRefs)
+                    GitRefsView(tags: combinedGitRefs, onRefTapped: { refName, commitHash in
+                        self.activeGitRef = (refName, commitHash)
+                        self.showGitRefPanel = true
+                    })
                         .onAppear {
-                            self.combinedGitRefs = event.tags.filter { $0.count > 1 && ($0[0].starts(with: "refs/") || $0[0] == "HEAD") }
-                            fetchAnnouncementEvent()
+                            if self.combinedGitRefs.isEmpty { // Fetch only once
+                                self.combinedGitRefs = event.tags.filter { $0.count > 1 && ($0[0].starts(with: "refs/") || $0[0] == "HEAD") }
+                                fetchAnnouncementEvent()
+                            }
+                        }
+                        .sheet(isPresented: $showGitRefPanel) {
+                            if let activeGitRef = activeGitRef {
+                                let d_tag = event.tags.first(where: { $0.first == "d" })?.last ?? "unknown-repo"
+                                GitRefDetailView(repo_name: d_tag, refName: activeGitRef.refName, commitHash: activeGitRef.commitHash)
+                            }
                         }
                 } else {
                     let should_show_img = should_show_images(contacts: damus.contacts, ev: event, our_pubkey: damus.pubkey)
@@ -623,21 +636,98 @@ struct EventView_Previews: PreviewProvider {
 
 struct GitRefsView: View {
     let tags: [[String]]
+    var onRefTapped: ((String, String)) -> Void
 
     var body: some View {
         VStack(alignment: .leading) {
             Text("Git References").font(.headline)
             ForEach(tags, id: \.self) { tag in
-                if tag.count > 1 {
-                    HStack {
-                        Text(tag[0]).font(.caption).bold()
-                        Text(tag[1]).font(.caption.monospaced())
+                if tag.count >= 2 {
+                    Button(action: {
+                        onRefTapped((tag[0], tag[1]))
+                    }) {
+                        HStack {
+                            Text(tag[0]).font(.caption).bold()
+                            Text(tag[1]).font(.caption.monospaced())
+                        }
                     }
-                }
+                    .buttonStyle(.plain)
+                } else {}
             }
         }
         .padding()
         .background(Color.gray.opacity(0.1))
         .cornerRadius(8)
+    }
+}
+
+struct _GitRefDetailView: View {
+    let repo_name: String
+    let refName: String
+    let commitHash: String
+    
+    @StateObject private var repo: GitRepository
+    @State private var commitMessage: String = "Loading..."
+
+    init(repo_name: String, refName: String, commitHash: String) {
+        self.repo_name = repo_name
+        self.refName = refName
+        self.commitHash = commitHash
+        
+        let localRepoLocation = documentURL.appendingPathComponent(repo_name)
+        self._repo = StateObject(wrappedValue: GitRepository(localRepoLocation, credentialManager))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(refName)
+                .font(.title)
+                .bold()
+            
+            Text(commitHash)
+                .font(.body.monospaced())
+                .foregroundColor(.gray)
+            
+            Divider()
+            
+            Text(commitMessage)
+                .font(.body)
+            
+            Spacer()
+        }
+        .padding()
+        .onAppear(perform: findCommit)
+    }
+
+    private func findCommit() {
+        repo.open()
+        
+        if !repo.exists() {
+            self.commitMessage = "Repository not found locally. Please clone it first."
+            return
+        }
+
+        repo.updateCommitGraph()
+        
+        if let commit = repo.commitGraph.commits.first(where: { $0.id.description == commitHash }) {
+            self.commitMessage = commit.message
+        } else {
+            self.commitMessage = "Commit not found locally. Fetching from remote..."
+            let allRemotes = repo.getRemotes()
+            if let remoteOrigin = allRemotes.first {
+                repo.fetch(remoteOrigin)
+                // After fetch, we'd ideally refresh. For now, the user needs to re-open.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    self.repo.updateCommitGraph()
+                    if let commit = self.repo.commitGraph.commits.first(where: { $0.id.description == self.commitHash }) {
+                        self.commitMessage = commit.message
+                    } else {
+                        self.commitMessage = "Commit not found after fetching."
+                    }
+                }
+            } else {
+                self.commitMessage = "Commit not found and no remote to fetch from."
+            }
+        }
     }
 }

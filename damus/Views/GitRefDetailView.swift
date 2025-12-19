@@ -37,6 +37,16 @@ struct GitRefDetailView: View {
         }
         .padding()
         .onAppear(perform: findCommit)
+        .onChange(of: repo.remoteProgress.inProgress) { inProgress in
+            if !inProgress {
+                self.repo.updateCommitGraph()
+                if let commit = self.repo.commitGraph.commits.first(where: { $0.id.description == self.commitHash }) {
+                    self.commitMessage = commit.message
+                } else {
+                    self.commitMessage = "Commit not found after fetching."
+                }
+            }
+        }
     }
 
     private func findCommit() {
@@ -47,24 +57,19 @@ struct GitRefDetailView: View {
             return
         }
 
+        print("Updating commit graph...")
         repo.updateCommitGraph()
+        print("Commit graph updated. Commits found: \(repo.commitGraph.commits.count)")
         
         if let commit = repo.commitGraph.commits.first(where: { $0.id.description == commitHash }) {
+            print("Commit found: \(commit.id.description)")
             self.commitMessage = commit.message
         } else {
+            print("Commit with hash \(commitHash) not found locally.")
             self.commitMessage = "Commit not found locally. Fetching from remote..."
             let allRemotes = repo.getRemotes()
             if let remoteOrigin = allRemotes.first {
                 repo.fetch(remoteOrigin)
-                // After fetch, we'd ideally refresh. For now, the user needs to re-open.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                    self.repo.updateCommitGraph()
-                    if let commit = self.repo.commitGraph.commits.first(where: { $0.id.description == self.commitHash }) {
-                        self.commitMessage = commit.message
-                    } else {
-                        self.commitMessage = "Commit not found after fetching."
-                    }
-                }
             } else {
                 self.commitMessage = "Commit not found and no remote to fetch from."
             }
