@@ -157,6 +157,12 @@ extension Notification.Name {
     }
 }
 
+extension Notification.Name {
+    static var search_string: Notification.Name {
+        return Notification.Name("search_string")
+    }
+}
+
 func handle_notify(_ name: Notification.Name) -> NotificationCenter.Publisher {
     return NotificationCenter.default.publisher(for: name)
 }

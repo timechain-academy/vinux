@@ -11,7 +11,9 @@ struct TagsView: View {
     let tags: [[String]]
     var onCloneTapped: ((URL) -> Void)?
     var onWebTapped: ((URL) -> Void)?
+    var onRelaysTapped: ((URL) -> Void)? // Add this
     var onDTapped: ((String) -> Void)?
+    var onSearchTapped: ((String) -> Void)? // Add this line
 
     @State private var totalHeight
           = CGFloat.zero
@@ -91,6 +93,21 @@ struct TagsView: View {
                 tagContent
             }
             .buttonStyle(.plain)
+        } else if tag.first == "a", tag.count > 1, let onSearchTapped = onSearchTapped {
+            // Check if the "a" tag value contains ":30617:" or ":30618:"
+            let a_tag_value = tag[1]
+            let components = a_tag_value.components(separatedBy: ":")
+            if (components.count == 3 && (components[0] == "30617" || components[0] == "30618")) {
+                let searchString = components[2]
+                Button(action: {
+                    onSearchTapped(searchString)
+                }) {
+                    tagContent
+                }
+                .buttonStyle(.plain)
+            } else {
+                tagContent
+            }
         } else {
             tagContent
         }

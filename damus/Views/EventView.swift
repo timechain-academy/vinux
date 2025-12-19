@@ -169,6 +169,17 @@ struct EventView: View {
         self.embedded = embedded
     }
 
+    private static func fetchContent(from url: URL, completion: @escaping (String?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Error fetching content from \(url): \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil)
+                return
+            }
+            completion(String(data: data, encoding: .utf8))
+        }.resume()
+    }
+
     var body: some View {
         return Group {
             if event.known_kind == .boost, let inner_ev = event.inner_event {
@@ -290,6 +301,8 @@ struct EventView: View {
                             } else {
                                 print("User tapped d: tag, but there are \(cloneURLs.count) clone URLs. Cannot automatically clone. Please select a specific clone URL.")
                             }
+                        }, onSearchTapped: { searchString in
+                            NotificationCenter.default.post(name: .search_string, object: searchString)
                         })
                         
                         Button(action: {

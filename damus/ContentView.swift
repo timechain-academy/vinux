@@ -265,6 +265,13 @@ struct ContentView: View {
             }
             
         }
+        .onReceive(handle_notify(.search_string)) { notif in
+            if let searchString = notif.object as? String {
+                let filter = NostrFilter(kinds: [30617, 30618], tags: ["d": [searchString]])
+                self.active_search = filter
+                self.search_open = true
+            }
+        }
         .onReceive(handle_notify(.boost)) { notif in
             guard let privkey = self.privkey else {
                 return
