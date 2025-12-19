@@ -88,14 +88,6 @@ class GitOperationTracker: ObservableObject {
     }
 }
 
-struct RepoInfo: Identifiable {
-    let id = UUID()
-    let url: String
-    let name: String
-    let commitsToFetch: [String]
-}
-
-
 @main
 struct damusApp: App {
     let nipService = NipService()
