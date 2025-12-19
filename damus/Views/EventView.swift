@@ -629,10 +629,15 @@ struct GitRefsView: View {
             Text("Git References").font(.headline)
             ForEach(tags, id: \.self) { tag in
                 if tag.count > 1 {
-                    HStack {
-                        Text(tag[0]).font(.caption).bold()
-                        Text(tag[1]).font(.caption.monospaced())
+                    Button(action: {
+                        print("Tapped ref: \(tag[0]), commit: \(tag[1])")
+                    }) {
+                        HStack {
+                            Text(tag[0]).font(.caption).bold()
+                            Text(tag[1]).font(.caption.monospaced())
+                        }
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
