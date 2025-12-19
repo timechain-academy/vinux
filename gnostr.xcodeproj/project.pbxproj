@@ -141,6 +141,7 @@
 		4CEE2B02280B39E800AB5EEF /* EventActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE2B01280B39E800AB5EEF /* EventActionBar.swift */; };
 		4FE60CDD295E1C5E00105A1F /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FE60CDC295E1C5E00105A1F /* Wallet.swift */; };
 		5BAD0364A2CF4488A9D5 /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB482820B2EF4DD8BF20 /* TagsView.swift */; };
+		DEADBEEF0000000000000006 /* GitRefDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000005 /* GitRefDetailView.swift */; };
 		5CE1859E105F49B782EA /* KeyPressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E7725E2A254E40803A /* KeyPressView.swift */; };
 		6C7DE41F2955169800E66263 /* Vault in Frameworks */ = {isa = PBXBuildFile; productRef = 6C7DE41E2955169800E66263 /* Vault */; };
 		7CF41C4E24814665A963 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E500E38DD0B64A48906A /* WebView.swift */; };
@@ -343,6 +344,7 @@
 		E990020E2955F837003BBC5A /* EditMetadataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMetadataView.swift; sourceTree = "<group>"; };
 		E9E4ED0A295867B900DD7078 /* ThreadV2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadV2View.swift; sourceTree = "<group>"; };
 		EB482820B2EF4DD8BF20 /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
+		DEADBEEF0000000000000005 /* GitRefDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitRefDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -523,6 +525,7 @@
 				4CB55EF2295E5D59007FD187 /* RecommendedRelayView.swift */,
 				4CB55EF4295E679D007FD187 /* UserRelaysView.swift */,
 				EB482820B2EF4DD8BF20 /* TagsView.swift */,
+				DEADBEEF0000000000000005 /* GitRefDetailView.swift */,
 				E500E38DD0B64A48906A /* WebView.swift */,
 				E4E7725E2A254E40803A /* KeyPressView.swift */,
 			);
@@ -920,6 +923,7 @@
 				4C3AC7A52836987600E1F516 /* MainTabView.swift in Sources */,
 				3169CAED294FCCFC00EE4006 /* Constants.swift in Sources */,
 				5BAD0364A2CF4488A9D5 /* TagsView.swift in Sources */,
+				DEADBEEF0000000000000006 /* GitRefDetailView.swift in Sources */,
 				990B13C117C5414ABB15 /* NipService.swift in Sources */,
 				4134044B978B49D488BA /* GnostrService.swift in Sources */,
 				7CF41C4E24814665A963 /* WebView.swift in Sources */,
