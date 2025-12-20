@@ -41,6 +41,7 @@ function setup_variables() {
 		-DCMAKE_C_COMPILER_WORKS=ON \
 		-DCMAKE_CXX_COMPILER_WORKS=ON \
 		-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
+                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM)
 
 	case $PLATFORM in
@@ -89,14 +90,16 @@ function setup_variables() {
 function build_libpcre() {
 	setup_variables $1
 
-	rm -rf pcre-8.45
-	git clone https://github.com/light-tech/PCRE.git pcre-8.45
+	##rm -rf pcre-8.45
+	git clone https://github.com/light-tech/PCRE.git pcre-8.45 || true
 	cd pcre-8.45
 
-	rm -rf build && mkdir build && cd build
+	mkdir -p build && cd build
 	CMAKE_ARGS+=(-DPCRE_BUILD_PCRECPP=NO \
 		-DPCRE_BUILD_PCREGREP=NO \
 		-DPCRE_BUILD_TESTS=NO \
+		-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
+                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DPCRE_SUPPORT_LIBBZ2=NO)
 
 		cmake "${CMAKE_ARGS[@]}" .. 
@@ -109,7 +112,7 @@ function build_openssl() {
 	setup_variables $1
 
 	# It is better to remove and redownload the source since building make the source code directory dirty!
-	rm -rf openssl-3.0.4
+	## rm -rf openssl-3.0.4
 	test -f openssl-3.0.4.tar.gz || curl -LO -s https://www.openssl.org/source/openssl-3.0.4.tar.gz
 	tar xzf openssl-3.0.4.tar.gz
 	cd openssl-3.0.4
@@ -149,16 +152,18 @@ function build_openssl() {
 function build_libssh2() {
 	setup_variables $1
 
-	rm -rf libssh2-1.10.0
+	## rm -rf libssh2-1.10.0
 	test -f libssh2-1.10.0.tar.gz || curl -LO -s https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
 	tar xzf libssh2-1.10.0.tar.gz
 	cd libssh2-1.10.0
 
-	rm -rf build && mkdir build && cd build
+	mkdir -p build && cd build
 
 	CMAKE_ARGS+=(-DCRYPTO_BACKEND=OpenSSL \
 		-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
 		-DBUILD_EXAMPLES=OFF \
+		-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
+                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DBUILD_TESTING=OFF)
 
 	cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
@@ -172,12 +177,12 @@ function build_libssh2() {
 function build_libgit2() {
     setup_variables $1
 
-    rm -rf libgit2-1.3.1
+    ## rm -rf libgit2-1.3.1
     test -f v1.3.1.zip || curl -LO -s https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
     ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ >/dev/null 2>/dev/null
     cd libgit2-1.3.1
 
-    rm -rf build && mkdir build && cd build
+    mkdir -p build && cd build
 
     CMAKE_ARGS+=(-DBUILD_CLAR=NO)
 
@@ -187,6 +192,8 @@ function build_libgit2() {
     CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
         -DUSE_SSH=ON \
         -DLIBSSH2_FOUND=YES \
+		-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
+                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
         -DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
 
     cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
@@ -214,7 +221,8 @@ function build_xcframework() {
 ### Copy SwiftGit2's module.modulemap to libgit2.xcframework/*/Headers
 ### so that we can use libgit2 C API in Swift (e.g. via SwiftGit2)
 function copy_modulemap() {
-    local FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
+    local FWNAME=$1
+    local FWDIRS=$(find $FWNAME.xcframework -mindepth 1 -maxdepth 1 -type d)
     for d in ${FWDIRS[@]}; do
         echo $d
         cp Clibgit2_modulemap $d/Headers/module.modulemap
@@ -242,11 +250,11 @@ for p in ${LIPO_PLATFORMS[@]}; do
     test -f libgit2_all_archs.a && rm libgit2.a && mv libgit2_all_archs.a libgit2.a
 done
 
-# Build raw libgit2 XCFramework for Objective-C usage
-build_xcframework libgit2 ${XCFRAMEWORK_PLATFORMS[@]}
-zip -r libgit2.xcframework.zip libgit2.xcframework/
+## # Build raw libgit2 XCFramework for Objective-C usage
+## build_xcframework libgit2 ${XCFRAMEWORK_PLATFORMS[@]}
+## zip -r libgit2.xcframework.zip libgit2.xcframework/
 
 # Build Clibgit2 XCFramework for use with SwiftGit2
-mv libgit2.xcframework Clibgit2.xcframework
-copy_modulemap
+build_xcframework Clibgit2 ${XCFRAMEWORK_PLATFORMS[@]}
+copy_modulemap Clibgit2
 zip -r Clibgit2.xcframework.zip Clibgit2.xcframework/
