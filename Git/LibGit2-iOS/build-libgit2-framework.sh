@@ -42,6 +42,7 @@ function setup_variables() {
 		-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
                 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM)
+	export SDKROOT=$SYSROOT
 
 	case $PLATFORM in
 		"iphoneos")
@@ -101,109 +102,108 @@ function build_libpcre() {
                 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DPCRE_SUPPORT_LIBBZ2=NO)
 
-	cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
-
-	cmake --build . --target install #>/dev/null 2>/dev/null
-}
-
-### Build openssl for a given platform
-function build_openssl() {
-	setup_variables $1
-
-	# It is better to remove and redownload the source since building make the source code directory dirty!
-	## rm -rf openssl-3.0.4
-	test -f openssl-3.0.4.tar.gz || curl -LO -s https://www.openssl.org/source/openssl-3.0.4.tar.gz
-	tar xzf openssl-3.0.4.tar.gz
-	cd openssl-3.0.4
-
-	case $PLATFORM in
-		        "iphoneos")
-					TARGET_OS=ios64-cross
-					export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
-		
-				"iphonesimulator-x86_64")
-					TARGET_OS=darwin64-x86_64-cc # Use specific target for x86_64 simulator
-					export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
-		
-				"iphonesimulator-arm64")
-					TARGET_OS=darwin64-arm64-cc # Use specific target for arm64 simulator
-					export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
-		
-				"maccatalyst-x86_64"|"maccatalyst-arm64")
-					TARGET_OS=darwin64-$ARCH-cc
-					export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
-		
-				"macosx"|"macosx-arm64")
-					TARGET_OS=darwin64-$ARCH-cc
-					export CFLAGS="-isysroot $SYSROOT";;
-		
-				*)
-					echo "Unsupported or missing platform!";;
-			esac
-		
-			# See https://wiki.openssl.org/index.php/Compilation_and_Installation
-			./Configure --prefix=$REPO_ROOT/install/$PLATFORM \
-				--openssldir=$REPO_ROOT/install/$PLATFORM \
-				$TARGET_OS no-shared no-dso no-hw no-engine #>/dev/null 2>/dev/null
-		
-			make #>/dev/null 2>/dev/null
-			make install_sw install_ssldirs #>/dev/null 2>/dev/null
-			export -n CFLAGS
-		}
-		
-		### Build libssh2 for a given platform (assume openssl was built)
-		function build_libssh2() {
-			setup_variables $1
-		
-			## rm -rf libssh2-1.10.0
-			test -f libssh2-1.10.0.tar.gz || curl -LO -s https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
-			tar xzf libssh2-1.10.0.tar.gz
-			cd libssh2-1.10.0
-		
-			rm -rf build && mkdir build && cd build
-		
-			CMAKE_ARGS+=(-DCRYPTO_BACKEND=OpenSSL \
-				-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
-				-DBUILD_EXAMPLES=OFF \
-				-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
-		                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-				-DBUILD_TESTING=OFF)
-		
-			cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
-		
-			cmake --build . --target install #>/dev/null 2>/dev/null
-		}
-		
-		### Build libgit2 for a single platform (given as the first and only argument)
-		### See @setup_variables for the list of available platform names
-		### Assume openssl and libssh2 was built
-		function build_libgit2() {
-		    setup_variables $1
-		
-		    ## rm -rf libgit2-1.3.1
-		    test -f v1.3.1.zip || curl -LO -s https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
-		    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ #>/dev/null 2>/dev/null
-		    cd libgit2-1.3.1
-		
-		    rm -rf build && mkdir build && cd build
-		
-		    CMAKE_ARGS+=(-DBUILD_CLAR=NO)
-		
-		    # See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
-		    # Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
-		    # we only need the headers.
-		    CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
-		        -DUSE_SSH=ON \
-		        -DLIBSSH2_FOUND=YES \
-				-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
-		                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-		        -DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
-		
-		    cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
-		
-		    cmake --build . --target install #>/dev/null 2>/dev/null
-		}
-		
+		cmake "${CMAKE_ARGS[@]}" ..
+	
+		cmake --build . --target install
+	}
+	
+	### Build openssl for a given platform
+	function build_openssl() {
+		setup_variables $1
+	
+		# It is better to remove and redownload the source since building make the source code directory dirty!
+		## rm -rf openssl-3.0.4
+		test -f openssl-3.0.4.tar.gz || curl -LO -s https://www.openssl.org/source/openssl-3.0.4.tar.gz
+		tar xzf openssl-3.0.4.tar.gz
+		cd openssl-3.0.4
+	
+		case $PLATFORM in
+			"iphoneos")
+				TARGET_OS=ios64-cross
+				export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
+	
+			"iphonesimulator-x86_64")
+				TARGET_OS=darwin64-x86_64-cc # Use specific target for x86_64 simulator
+				export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
+	
+			"iphonesimulator-arm64")
+				TARGET_OS=darwin64-arm64-cc # Use specific target for arm64 simulator
+				export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
+	
+			"maccatalyst-x86_64"|"maccatalyst-arm64")
+				TARGET_OS=darwin64-$ARCH-cc
+				export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
+	
+			"macosx"|"macosx-arm64")
+				TARGET_OS=darwin64-$ARCH-cc
+				export CFLAGS="-isysroot $SYSROOT";;
+	
+			*)
+				echo "Unsupported or missing platform!";;
+		esac
+	
+		# See https://wiki.openssl.org/index.php/Compilation_and_Installation
+		./Configure --prefix=$REPO_ROOT/install/$PLATFORM \
+			--openssldir=$REPO_ROOT/install/$PLATFORM \
+			$TARGET_OS no-shared no-dso no-hw no-engine
+	
+		make
+		make install_sw install_ssldirs
+		export -n CFLAGS
+	}
+	
+	### Build libssh2 for a given platform (assume openssl was built)
+	function build_libssh2() {
+		setup_variables $1
+	
+		## rm -rf libssh2-1.10.0
+		test -f libssh2-1.10.0.tar.gz || curl -LO -s https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
+		tar xzf libssh2-1.10.0.tar.gz
+		cd libssh2-1.10.0
+	
+		rm -rf build && mkdir build && cd build
+	
+		CMAKE_ARGS+=(-DCRYPTO_BACKEND=OpenSSL \
+			-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
+			-DBUILD_EXAMPLES=OFF \
+			-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
+	                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+			-DBUILD_TESTING=OFF)
+	
+		cmake "${CMAKE_ARGS[@]}" ..
+	
+		cmake --build . --target install
+	}
+	
+	### Build libgit2 for a single platform (given as the first and only argument)
+	### See @setup_variables for the list of available platform names
+	### Assume openssl and libssh2 was built
+	function build_libgit2() {
+	    setup_variables $1
+	
+	    ## rm -rf libgit2-1.3.1
+	    test -f v1.3.1.zip || curl -LO -s https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
+	    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./
+	    cd libgit2-1.3.1
+	
+	    rm -rf build && mkdir build && cd build
+	
+	    CMAKE_ARGS+=(-DBUILD_CLAR=NO)
+	
+	    # See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
+	    # Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
+	    # we only need the headers.
+	    CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
+	        -DUSE_SSH=ON \
+	        -DLIBSSH2_FOUND=YES \
+			-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
+	                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+	        -DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
+	
+	    cmake "${CMAKE_ARGS[@]}" ..
+	
+	    cmake --build . --target install
+	}		
 		### Create xcframework for a given library
 		function build_xcframework() {
 			local FWNAME=$1
