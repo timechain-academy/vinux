@@ -242,14 +242,14 @@ for p in ${AVAILABLE_PLATFORMS[@]}; do
 
 	# Merge all static libs as libgit2.a since xcodebuild doesn't allow specifying multiple .a
 	cd $REPO_ROOT/install/$p
-	libtool -static -o libgit2.a lib/*.a
+	libtool -static -o Clibgit2.a lib/*.a
 done
 
 # Merge the libgit2.a for iphonesimulator & iphonesimulator-arm64 as well as maccatalyst & maccatalyst-arm64 using lipo
 for p in ${LIPO_PLATFORMS[@]}; do
     cd $REPO_ROOT/install/$p
-    lipo libgit2.a ../$p-arm64/libgit2.a -output libgit2_all_archs.a -create
-    test -f libgit2_all_archs.a && rm libgit2.a && mv libgit2_all_archs.a libgit2.a
+    lipo Clibgit2.a ../$p-arm64/Clibgit2.a -output Clibgit2_all_archs.a -create
+    test -f Clibgit2_all_archs.a && rm Clibgit2.a && mv Clibgit2_all_archs.a Clibgit2.a
 done
 
 # Build raw libgit2 XCFramework for Objective-C usage
