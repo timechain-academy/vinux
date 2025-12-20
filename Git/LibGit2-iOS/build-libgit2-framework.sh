@@ -232,13 +232,53 @@ function copy_modulemap() {
 for p in ${AVAILABLE_PLATFORMS[@]}; do
 	echo "Build libraries for $p"
 	build_libpcre $p
+	
+    cd $REPO_ROOT/install/$p
+    if [ -f lib/libpcre.a ]; then
+        echo "Architectures for install/$p/lib/libpcre.a:"
+        lipo -info lib/libpcre.a
+    else
+        echo "Warning: libpcre.a not found for platform $p"
+    fi
+    cd $REPO_ROOT # Go back to root before next build function
+
 	build_openssl $p
+    cd $REPO_ROOT/install/$p
+    if [ -f lib/libcrypto.a ] && [ -f lib/libssl.a ]; then
+        echo "Architectures for install/$p/lib/libcrypto.a:"
+        lipo -info lib/libcrypto.a
+        echo "Architectures for install/$p/lib/libssl.a:"
+        lipo -info lib/libssl.a
+    else
+        echo "Warning: libcrypto.a or libssl.a not found for platform $p"
+    fi
+    cd $REPO_ROOT
+    
 	build_libssh2 $p
+    cd $REPO_ROOT/install/$p
+    if [ -f lib/libssh2.a ]; then
+        echo "Architectures for install/$p/lib/libssh2.a:"
+        lipo -info lib/libssh2.a
+    else
+        echo "Warning: libssh2.a not found for platform $p"
+    fi
+    cd $REPO_ROOT
+    
 	build_libgit2 $p
+    cd $REPO_ROOT/install/$p
+    if [ -f lib/libgit2.a ]; then
+        echo "Architectures for install/$p/lib/libgit2.a:"
+        lipo -info lib/libgit2.a
+    else
+        echo "Warning: libgit2.a not found for platform $p"
+    fi
+    cd $REPO_ROOT
 
 	# Merge all static libs as Clibgit2.a since xcodebuild doesn't allow specifying multiple .a
 	cd $REPO_ROOT/install/$p
 	libtool -static -o Clibgit2.a lib/*.a
+    echo "Architectures for install/$p/Clibgit2.a (after libtool):"
+    lipo -info Clibgit2.a
 done
 
 # Remove any explicit lipo commands that combine architectures prematurely.
