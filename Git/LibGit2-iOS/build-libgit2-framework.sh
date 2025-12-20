@@ -117,170 +117,175 @@ function build_openssl() {
 	cd openssl-3.0.4
 
 	case $PLATFORM in
-		"iphoneos")
-			TARGET_OS=ios64-cross
-			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
-
-		"iphonesimulator-x86_64"|"iphonesimulator-arm64")
-			TARGET_OS=iossimulator-xcrun
-			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
-
-		"maccatalyst-x86_64"|"maccatalyst-arm64")
-			TARGET_OS=darwin64-$ARCH-cc
-			export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
-
-		"macosx"|"macosx-arm64")
-			TARGET_OS=darwin64-$ARCH-cc
-			export CFLAGS="-isysroot $SYSROOT";;
-
-		*)
-			echo "Unsupported or missing platform!";;
-	esac
-
-	# See https://wiki.openssl.org/index.php/Compilation_and_Installation
-	./Configure --prefix=$REPO_ROOT/install/$PLATFORM \
-		--openssldir=$REPO_ROOT/install/$PLATFORM \
-		$TARGET_OS no-shared no-dso no-hw no-engine #>/dev/null 2>/dev/null
-
-	make #>/dev/null 2>/dev/null
-	make install_sw install_ssldirs #>/dev/null 2>/dev/null
-	export -n CFLAGS
-}
-
-### Build libssh2 for a given platform (assume openssl was built)
-function build_libssh2() {
-	setup_variables $1
-
-	## rm -rf libssh2-1.10.0
-	test -f libssh2-1.10.0.tar.gz || curl -LO -s https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
-	tar xzf libssh2-1.10.0.tar.gz
-	cd libssh2-1.10.0
-
-	rm -rf build && mkdir build && cd build
-
-	CMAKE_ARGS+=(-DCRYPTO_BACKEND=OpenSSL \
-		-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
-		-DBUILD_EXAMPLES=OFF \
-		-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
-                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-		-DBUILD_TESTING=OFF)
-
-	cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
-
-	cmake --build . --target install #>/dev/null 2>/dev/null
-}
-
-### Build libgit2 for a single platform (given as the first and only argument)
-### See @setup_variables for the list of available platform names
-### Assume openssl and libssh2 was built
-function build_libgit2() {
-    setup_variables $1
-
-    ## rm -rf libgit2-1.3.1
-    test -f v1.3.1.zip || curl -LO -s https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
-    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ #>/dev/null 2>/dev/null
-    cd libgit2-1.3.1
-
-    rm -rf build && mkdir build && cd build
-
-    CMAKE_ARGS+=(-DBUILD_CLAR=NO)
-
-    # See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
-    # Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
-    # we only need the headers.
-    CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
-        -DUSE_SSH=ON \
-        -DLIBSSH2_FOUND=YES \
-		-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
-                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-        -DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
-
-    cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
-
-    cmake --build . --target install #>/dev/null 2>/dev/null
-}
-
-### Create xcframework for a given library
-function build_xcframework() {
-	local FWNAME=$1
-	shift
-	local PLATFORMS=( "$@" )
-	local FRAMEWORKS_ARGS=()
-
-	echo "Building" $FWNAME "XCFramework containing" ${PLATFORMS[@]}
-
-	for p in ${PLATFORMS[@]}; do
-		FRAMEWORKS_ARGS+=("-library" "install/$p/$FWNAME.a" "-headers" "install/$p/include")
-	done
-
-	cd $REPO_ROOT
-	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
-}
-
-### Copy SwiftGit2's module.modulemap to Clibgit2.xcframework/*/Headers
-### so that we can use libgit2 C API in Swift (e.g. via SwiftGit2)
-function copy_modulemap() {
-    local FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
-    for d in ${FWDIRS[@]}; do
-        echo $d
-        cp Clibgit2_modulemap $d/Headers/module.modulemap
-    done
-}
-
-### Build libgit2 and Clibgit2 frameworks for all available platforms
-
-for p in ${AVAILABLE_PLATFORMS[@]}; do
-	echo "Build libraries for $p"
-	build_libpcre $p
-	
-    cd $REPO_ROOT/install/$p
-    if [ -f lib/libpcre.a ]; then
-        echo "Architectures for install/$p/lib/libpcre.a:"
-        lipo -info lib/libpcre.a
-    else
-        echo "Warning: libpcre.a not found for platform $p"
-    fi
-    cd $REPO_ROOT # Go back to root before next build function
-
-	build_openssl $p
-    cd $REPO_ROOT/install/$p
-    if [ -f lib/libcrypto.a ] && [ -f lib/libssl.a ]; then
-        echo "Architectures for install/$p/lib/libcrypto.a:"
-        lipo -info lib/libcrypto.a
-        echo "Architectures for install/$p/lib/libssl.a:"
-        lipo -info lib/libssl.a
-    else
-        echo "Warning: libcrypto.a or libssl.a not found for platform $p"
-    fi
-    cd $REPO_ROOT
-    
-	build_libssh2 $p
-    cd $REPO_ROOT/install/$p
-    if [ -f lib/libssh2.a ]; then
-        echo "Architectures for install/$p/lib/libssh2.a:"
-        lipo -info lib/libssh2.a
-    else
-        echo "Warning: libssh2.a not found for platform $p"
-    fi
-    cd $REPO_ROOT
-    
-	build_libgit2 $p
-    cd $REPO_ROOT/install/$p
-    if [ -f lib/libgit2.a ]; then
-        echo "Architectures for install/$p/lib/libgit2.a:"
-        lipo -info lib/libgit2.a
-    else
-        echo "Warning: libgit2.a not found for platform $p"
-    fi
-    cd $REPO_ROOT
-
-	# Merge all static libs as Clibgit2.a since xcodebuild doesn't allow specifying multiple .a
-	cd $REPO_ROOT/install/$p
-	libtool -static -o Clibgit2.a lib/*.a
-    echo "Architectures for install/$p/Clibgit2.a (after libtool):"
-    lipo -info Clibgit2.a
-done
-
+		        "iphoneos")
+					TARGET_OS=ios64-cross
+					export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
+		
+				"iphonesimulator-x86_64")
+					TARGET_OS=darwin64-x86_64-cc # Use specific target for x86_64 simulator
+					export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
+		
+				"iphonesimulator-arm64")
+					TARGET_OS=darwin64-arm64-cc # Use specific target for arm64 simulator
+					export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
+		
+				"maccatalyst-x86_64"|"maccatalyst-arm64")
+					TARGET_OS=darwin64-$ARCH-cc
+					export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
+		
+				"macosx"|"macosx-arm64")
+					TARGET_OS=darwin64-$ARCH-cc
+					export CFLAGS="-isysroot $SYSROOT";;
+		
+				*)
+					echo "Unsupported or missing platform!";;
+			esac
+		
+			# See https://wiki.openssl.org/index.php/Compilation_and_Installation
+			./Configure --prefix=$REPO_ROOT/install/$PLATFORM \
+				--openssldir=$REPO_ROOT/install/$PLATFORM \
+				$TARGET_OS no-shared no-dso no-hw no-engine #>/dev/null 2>/dev/null
+		
+			make #>/dev/null 2>/dev/null
+			make install_sw install_ssldirs #>/dev/null 2>/dev/null
+			export -n CFLAGS
+		}
+		
+		### Build libssh2 for a given platform (assume openssl was built)
+		function build_libssh2() {
+			setup_variables $1
+		
+			## rm -rf libssh2-1.10.0
+			test -f libssh2-1.10.0.tar.gz || curl -LO -s https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
+			tar xzf libssh2-1.10.0.tar.gz
+			cd libssh2-1.10.0
+		
+			rm -rf build && mkdir build && cd build
+		
+			CMAKE_ARGS+=(-DCRYPTO_BACKEND=OpenSSL \
+				-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
+				-DBUILD_EXAMPLES=OFF \
+				-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
+		                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+				-DBUILD_TESTING=OFF)
+		
+			cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
+		
+			cmake --build . --target install #>/dev/null 2>/dev/null
+		}
+		
+		### Build libgit2 for a single platform (given as the first and only argument)
+		### See @setup_variables for the list of available platform names
+		### Assume openssl and libssh2 was built
+		function build_libgit2() {
+		    setup_variables $1
+		
+		    ## rm -rf libgit2-1.3.1
+		    test -f v1.3.1.zip || curl -LO -s https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
+		    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ #>/dev/null 2>/dev/null
+		    cd libgit2-1.3.1
+		
+		    rm -rf build && mkdir build && cd build
+		
+		    CMAKE_ARGS+=(-DBUILD_CLAR=NO)
+		
+		    # See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
+		    # Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
+		    # we only need the headers.
+		    CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
+		        -DUSE_SSH=ON \
+		        -DLIBSSH2_FOUND=YES \
+				-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
+		                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+		        -DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
+		
+		    cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
+		
+		    cmake --build . --target install #>/dev/null 2>/dev/null
+		}
+		
+		### Create xcframework for a given library
+		function build_xcframework() {
+			local FWNAME=$1
+			shift
+			local PLATFORMS=( "$@" )
+			local FRAMEWORKS_ARGS=()
+		
+			echo "Building" $FWNAME "XCFramework containing" ${PLATFORMS[@]}
+		
+			for p in ${PLATFORMS[@]}; do
+				FRAMEWORKS_ARGS+=("-library" "install/$p/$FWNAME.a" "-headers" "install/$p/include")
+			done
+		
+			cd $REPO_ROOT
+			xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
+		}
+		
+		### Copy Clibgit2_modulemap to Clibgit2.xcframework/*/Headers
+		### so that we can use libgit2 C API in Swift (e.g. via SwiftGit2)
+		function copy_modulemap() {
+		    local FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
+		    for d in ${FWDIRS[@]}; do
+		        echo $d
+		        cp Clibgit2_modulemap $d/Headers/module.modulemap
+		    done
+		}
+		
+		### Build libgit2 and Clibgit2 frameworks for all available platforms
+		
+		for p in ${AVAILABLE_PLATFORMS[@]}; do
+			echo "Build libraries for $p"
+		    # Clean installation directory for the current platform to ensure a fresh build
+		    rm -rf "$REPO_ROOT/install/$p"
+			build_libpcre $p
+			
+		    cd $REPO_ROOT/install/$p
+		    if [ -f lib/libpcre.a ]; then
+		        echo "Architectures for install/$p/lib/libpcre.a:"
+		        lipo -info lib/libpcre.a
+		    else
+		        echo "Warning: libpcre.a not found for platform $p"
+		    fi
+		    cd $REPO_ROOT # Go back to root before next build function
+		
+			build_openssl $p
+		    cd $REPO_ROOT/install/$p
+		    if [ -f lib/libcrypto.a ] && [ -f lib/libssl.a ]; then
+		        echo "Architectures for install/$p/lib/libcrypto.a:"
+		        lipo -info lib/libcrypto.a
+		        echo "Architectures for install/$p/lib/libssl.a:"
+		        lipo -info lib/libssl.a
+		    else
+		        echo "Warning: libcrypto.a or libssl.a not found for platform $p"
+		    fi
+		    cd $REPO_ROOT
+		    
+			build_libssh2 $p
+		    cd $REPO_ROOT/install/$p
+		    if [ -f lib/libssh2.a ]; then
+		        echo "Architectures for install/$p/lib/libssh2.a:"
+		        lipo -info lib/libssh2.a
+		    else
+		        echo "Warning: libssh2.a not found for platform $p"
+		    fi
+		    cd $REPO_ROOT
+		    
+			build_libgit2 $p
+		    cd $REPO_ROOT/install/$p
+		    if [ -f lib/libgit2.a ]; then
+		        echo "Architectures for install/$p/lib/libgit2.a:"
+		        lipo -info lib/libgit2.a
+		    else
+		        echo "Warning: libgit2.a not found for platform $p"
+		    fi
+		    cd $REPO_ROOT
+		
+			# Merge all static libs as Clibgit2.a since xcodebuild doesn't allow specifying multiple .a
+			cd $REPO_ROOT/install/$p
+			libtool -static -o Clibgit2.a lib/*.a
+		    echo "Architectures for install/$p/Clibgit2.a (after libtool):"
+		    lipo -info Clibgit2.a
+		done
 # Remove any explicit lipo commands that combine architectures prematurely.
 # xcodebuild -create-xcframework will handle combining compatible architectures for the same platform.
 
