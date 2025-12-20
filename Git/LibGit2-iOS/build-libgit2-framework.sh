@@ -240,12 +240,18 @@ for p in ${AVAILABLE_PLATFORMS[@]}; do
 	build_libssh2 $p
 	build_libgit2 $p
 
-	# Merge all static libs as libgit2.a since xcodebuild doesn't allow specifying multiple .a
+	# Merge all static libs as Clibgit2.a since xcodebuild doesn't allow specifying multiple .a
 	cd $REPO_ROOT/install/$p
 	libtool -static -o Clibgit2.a lib/*.a
 done
 
-# Merge the libgit2.a for iphonesimulator & iphonesimulator-arm64 as well as maccatalyst & maccatalyst-arm64 using lipo
+# Debug: Print architectures of Clibgit2.a before lipo for simulator platforms
+echo "Architectures for install/iphonesimulator/Clibgit2.a:"
+lipo -info $REPO_ROOT/install/iphonesimulator/Clibgit2.a
+echo "Architectures for install/iphonesimulator-arm64/Clibgit2.a:"
+lipo -info $REPO_ROOT/install/iphonesimulator-arm64/Clibgit2.a
+
+# Merge the Clibgit2.a for iphonesimulator & iphonesimulator-arm64 as well as maccatalyst & maccatalyst-arm64 using lipo
 for p in ${LIPO_PLATFORMS[@]}; do
     cd $REPO_ROOT/install/$p
     lipo Clibgit2.a ../$p-arm64/Clibgit2.a -output Clibgit2_all_archs.a -create
