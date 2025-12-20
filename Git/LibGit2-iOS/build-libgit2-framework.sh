@@ -5,6 +5,9 @@
 #  2. the required tools (wget, ninja, cmake, autotools) are installed either globally via homebrew or locally in tools/bin using our other script build_tools.sh
 #
 
+TARGET=${1:-maccatalyst}
+export TARGET
+
 export REPO_ROOT=`pwd`
 export PATH=$PATH:$REPO_ROOT/tools/bin
 
@@ -34,7 +37,7 @@ LIPO_PLATFORMS=(iphonesimulator maccatalyst)
 ### providing basic/common CMake options will be set.
 function setup_variables() {
 	cd $REPO_ROOT
-	PLATFORM=$1
+	PLATFORM=$TARGET ## NEEDS an AVAILABLE_PLATFORM
 
 	CMAKE_ARGS=(-DBUILD_SHARED_LIBS=NO \
 		-DCMAKE_BUILD_TYPE=Release \
@@ -88,7 +91,7 @@ function setup_variables() {
 
 ### Build libpcre for a given platform
 function build_libpcre() {
-	setup_variables $1
+	setup_variables $TARGET
 
 	##rm -rf pcre-8.45
 	git clone https://github.com/light-tech/PCRE.git pcre-8.45 || true
@@ -109,7 +112,7 @@ function build_libpcre() {
 
 ### Build openssl for a given platform
 function build_openssl() {
-	setup_variables $1
+	setup_variables $TARGET
 
 	# It is better to remove and redownload the source since building make the source code directory dirty!
 	## rm -rf openssl-3.0.4
@@ -141,7 +144,7 @@ function build_openssl() {
 	# See https://wiki.openssl.org/index.php/Compilation_and_Installation
 	./Configure --prefix=$REPO_ROOT/install/$PLATFORM \
 		--openssldir=$REPO_ROOT/install/$PLATFORM \
-		$TARGET_OS no-shared no-dso no-hw no-engine >/dev/null 2>/dev/null
+		$TARGET_OS no-shared no-dso no-hw no-engine
 
 	make 
 	make install_sw install_ssldirs
@@ -150,7 +153,7 @@ function build_openssl() {
 
 ### Build libssh2 for a given platform (assume openssl was built)
 function build_libssh2() {
-	setup_variables $1
+	setup_variables $TARGET
 
 	## rm -rf libssh2-1.10.0
 	test -f libssh2-1.10.0.tar.gz || curl -LO -s https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
@@ -175,7 +178,7 @@ function build_libssh2() {
 ### See @setup_variables for the list of available platform names
 ### Assume openssl and libssh2 was built
 function build_libgit2() {
-    setup_variables $1
+    setup_variables $TARGET
 
     ## rm -rf libgit2-1.3.1
     test -f v1.3.1.zip || curl -LO -s https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
@@ -203,7 +206,7 @@ function build_libgit2() {
 
 ### Create xcframework for a given library
 function build_xcframework() {
-	local FWNAME=$1
+	local FWNAME=$TARGET
 	shift
 	local PLATFORMS=( "$@" )
 	local FRAMEWORKS_ARGS=()
@@ -221,7 +224,7 @@ function build_xcframework() {
 ### Copy SwiftGit2's module.modulemap to libgit2.xcframework/*/Headers
 ### so that we can use libgit2 C API in Swift (e.g. via SwiftGit2)
 function copy_modulemap() {
-    local FWNAME=$1
+    local FWNAME=$TARGET
     local FWDIRS=$(find $FWNAME.xcframework -mindepth 1 -maxdepth 1 -type d)
     for d in ${FWDIRS[@]}; do
         echo $d
@@ -257,4 +260,7 @@ done
 # Build Clibgit2 XCFramework for use with SwiftGit2
 build_xcframework Clibgit2 ${XCFRAMEWORK_PLATFORMS[@]}
 copy_modulemap Clibgit2
-zip -r Clibgit2.xcframework.zip Clibgit2.xcframework/
+
+mkdir -p Clibgit2.xcframework
+zip -r Clibgit2.xcframework.zip -i Clibgit2.xcframework/
+rsync -r Clibgit2.xcframework/** ../libgit2.xcframework/
