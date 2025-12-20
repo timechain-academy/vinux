@@ -13,20 +13,16 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 
 # List of platforms-architecture that we support
 # Note that there are limitations in `xcodebuild` command that disallows `maccatalyst` and `macosx` (native macOS lib) in the same xcframework.
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator iphonesimulator-arm64 maccatalyst maccatalyst-arm64) # macosx macosx-arm64
-
-# List of frameworks included in the XCFramework (= AVAILABLE_PLATFORMS without architecture specifications)
-XCFRAMEWORK_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
-
-# List of platforms that need to be merged using lipo due to presence of multiple architectures
-LIPO_PLATFORMS=(iphonesimulator maccatalyst)
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator-x86_64 iphonesimulator-arm64 maccatalyst-x86_64 maccatalyst-arm64) # macosx macosx-arm64
 
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
 ### where PLATFORM is the platform to build for and should be one of
 ###    iphoneos  (implicitly arm64)
-###    iphonesimulator, iphonesimulator-arm64
-###    maccatalyst, maccatalyst-arm64
+###    iphonesimulator-x86_64
+###    iphonesimulator-arm64
+###    maccatalyst-x86_64
+###    maccatalyst-arm64
 ###    macosx, macosx-arm64
 ###
 ### After this function is executed, the variables
@@ -54,7 +50,7 @@ function setup_variables() {
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH \
 				-DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
-		"iphonesimulator")
+		"iphonesimulator-x86_64")
 			ARCH=x86_64
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
@@ -64,7 +60,7 @@ function setup_variables() {
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
-		"maccatalyst")
+		"maccatalyst-x86_64")
 			ARCH=x86_64
 			SYSROOT=`xcodebuild -version -sdk macosx Path`
 			CMAKE_ARGS+=(-DCMAKE_C_FLAGS=-target\ $ARCH-apple-ios14.1-macabi);;
@@ -125,11 +121,11 @@ function build_openssl() {
 			TARGET_OS=ios64-cross
 			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
 
-		"iphonesimulator"|"iphonesimulator-arm64")
+		"iphonesimulator-x86_64"|"iphonesimulator-arm64")
 			TARGET_OS=iossimulator-xcrun
 			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
 
-		"maccatalyst"|"maccatalyst-arm64")
+		"maccatalyst-x86_64"|"maccatalyst-arm64")
 			TARGET_OS=darwin64-$ARCH-cc
 			export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
 
@@ -221,7 +217,7 @@ function build_xcframework() {
 	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
 }
 
-### Copy SwiftGit2's module.modulemap to libgit2.xcframework/*/Headers
+### Copy SwiftGit2's module.modulemap to Clibgit2.xcframework/*/Headers
 ### so that we can use libgit2 C API in Swift (e.g. via SwiftGit2)
 function copy_modulemap() {
     local FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
@@ -245,25 +241,15 @@ for p in ${AVAILABLE_PLATFORMS[@]}; do
 	libtool -static -o Clibgit2.a lib/*.a
 done
 
-# Debug: Print architectures of Clibgit2.a before lipo for simulator platforms
-echo "Architectures for install/iphonesimulator/Clibgit2.a:"
-lipo -info $REPO_ROOT/install/iphonesimulator/Clibgit2.a
-echo "Architectures for install/iphonesimulator-arm64/Clibgit2.a:"
-lipo -info $REPO_ROOT/install/iphonesimulator-arm64/Clibgit2.a
-
-# Merge the Clibgit2.a for iphonesimulator & iphonesimulator-arm64 as well as maccatalyst & maccatalyst-arm64 using lipo
-for p in ${LIPO_PLATFORMS[@]}; do
-    cd $REPO_ROOT/install/$p
-    lipo Clibgit2.a ../$p-arm64/Clibgit2.a -output Clibgit2_all_archs.a -create
-    test -f Clibgit2_all_archs.a && rm Clibgit2.a && mv Clibgit2_all_archs.a Clibgit2.a
-done
+# Remove any explicit lipo commands that combine architectures prematurely.
+# xcodebuild -create-xcframework will handle combining compatible architectures for the same platform.
 
 # Build raw libgit2 XCFramework for Objective-C usage
-build_xcframework libgit2 ${XCFRAMEWORK_PLATFORMS[@]}
+build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
 zip -r libgit2.xcframework.zip -i libgit2.xcframework/
 
 # Build Clibgit2 XCFramework for use with SwiftGit2
-build_xcframework Clibgit2 ${XCFRAMEWORK_PLATFORMS[@]}
+build_xcframework Clibgit2 ${AVAILABLE_PLATFORMS[@]}
 copy_modulemap Clibgit2
 
 mkdir -p Clibgit2.xcframework
