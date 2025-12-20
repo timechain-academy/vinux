@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import damus
+@testable import gnostr
 
 class Bech32Tests: XCTestCase {
 
