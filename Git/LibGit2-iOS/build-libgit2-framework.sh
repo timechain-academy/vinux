@@ -254,7 +254,7 @@ done
 
 # Build raw libgit2 XCFramework for Objective-C usage
 build_xcframework libgit2 ${XCFRAMEWORK_PLATFORMS[@]}
-zip -r libgit2.xcframework.zip libgit2.xcframework/
+zip -r libgit2.xcframework.zip -i libgit2.xcframework/
 
 # Build Clibgit2 XCFramework for use with SwiftGit2
 build_xcframework Clibgit2 ${XCFRAMEWORK_PLATFORMS[@]}
