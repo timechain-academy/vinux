@@ -35,47 +35,62 @@ struct GitRefDetailView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(refName)
-                .font(.title)
-                .bold()
-            
-            Text(commitHash)
-                .font(.body.monospaced())
-                .foregroundColor(.gray)
-            
-            Divider()
-            
-            if let details = commitDetails {
-                Text(details.message)
-                    .font(.body)
-                Text("Author: \(details.author)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Text("Date: \(details.date, formatter: Self.itemFormatter)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            } else {
-                Text("Loading commit details...")
-                    .font(.body)
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .onAppear(perform: findCommit)
-        .onChange(of: repo.remoteProgress.inProgress) { inProgress in
-            if !inProgress {
-                self.repo.updateCommitGraph()
-                if let commit = self.repo.commitGraph.commits.first(where: { $0.id.description == self.commitHash }) {
-                    self.commitDetails = CommitDetails(
-                        message: commit.message,
-                        author: commit.author.name,
-                        date: commit.time
-                    )
+        ZStack(alignment: .topTrailing) { // Use ZStack to position the close button
+            VStack(alignment: .leading, spacing: 10) {
+                Text(refName)
+                    .font(.title)
+                    .bold()
+                
+                Text(commitHash)
+                    .font(.body.monospaced())
+                    .foregroundColor(.gray)
+                
+                Divider()
+                
+                if let details = commitDetails {
+                    Text(details.message)
+                        .font(.body)
+                    Text("Author: \(details.author)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("Date: \(details.date, formatter: Self.itemFormatter)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 } else {
-                    self.commitDetails = CommitDetails(message: "Commit not found after fetching.", author: "N/A", date: Date())
+                    Text("Loading commit details...")
+                        .font(.body)
                 }
+                
+                Spacer()
+            }
+            .padding()
+            .onAppear(perform: findCommit)
+            .onChange(of: repo.remoteProgress.inProgress) { inProgress in
+                if !inProgress {
+                    self.repo.updateCommitGraph()
+                    if let commit = self.repo.commitGraph.commits.first(where: { $0.id.description == self.commitHash }) {
+                        self.commitDetails = CommitDetails(
+                            message: commit.message,
+                            author: commit.author.name,
+                            date: commit.time
+                        )
+                    } else {
+                        self.commitDetails = CommitDetails(message: "Commit not found after fetching.", author: "N/A", date: Date())
+                    }
+                }
+            }
+            #if os(macOS)
+            .keyboardShortcut(.escape, action: { isPresented = false })
+            #endif
+
+            // Close button
+            Button(action: {
+                isPresented = false
+            }) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.gray)
+                    .padding(10)
             }
         }
     }
