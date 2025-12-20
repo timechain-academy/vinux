@@ -105,9 +105,9 @@ function build_libpcre() {
                 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DPCRE_SUPPORT_LIBBZ2=NO)
 
-	cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
+	cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
 
-	cmake --build . --target install >/dev/null 2>/dev/null
+	cmake --build . --target install #>/dev/null 2>/dev/null
 }
 
 ### Build openssl for a given platform
@@ -144,10 +144,10 @@ function build_openssl() {
 	# See https://wiki.openssl.org/index.php/Compilation_and_Installation
 	./Configure --prefix=$REPO_ROOT/install/$PLATFORM \
 		--openssldir=$REPO_ROOT/install/$PLATFORM \
-		$TARGET_OS no-shared no-dso no-hw no-engine >/dev/null 2>/dev/null
+		$TARGET_OS no-shared no-dso no-hw no-engine #>/dev/null 2>/dev/null
 
-	make >/dev/null 2>/dev/null
-	make install_sw install_ssldirs >/dev/null 2>/dev/null
+	make #>/dev/null 2>/dev/null
+	make install_sw install_ssldirs #>/dev/null 2>/dev/null
 	export -n CFLAGS
 }
 
@@ -169,9 +169,9 @@ function build_libssh2() {
                 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DBUILD_TESTING=OFF)
 
-	cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
+	cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
 
-	cmake --build . --target install >/dev/null 2>/dev/null
+	cmake --build . --target install #>/dev/null 2>/dev/null
 }
 
 ### Build libgit2 for a single platform (given as the first and only argument)
@@ -182,7 +182,7 @@ function build_libgit2() {
 
     ## rm -rf libgit2-1.3.1
     test -f v1.3.1.zip || curl -LO -s https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
-    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ >/dev/null 2>/dev/null
+    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ #>/dev/null 2>/dev/null
     cd libgit2-1.3.1
 
     rm -rf build && mkdir build && cd build
