@@ -11,7 +11,7 @@
 # Install:
 # > cmake --build . --target install
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5...3.27)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5.1)
 
 project(libgit2 VERSION "1.3.1" LANGUAGES C)
 
