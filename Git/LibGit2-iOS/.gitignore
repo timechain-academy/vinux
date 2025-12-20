@@ -1,3 +1,11 @@
+install
+temp/
+*.d
+*.o
+*.lo
+*.la
+*.*.gz
+
 openssl-3.0.4.tar.gz
 openssl-3.0.4/apps/lib/cmp_client_test-bin-cmp_mock_srv.d
 openssl-3.0.4/apps/lib/cmp_client_test-bin-cmp_mock_srv.o
@@ -1219,7 +1227,7 @@ openssl-3.0.4/fuzz/cmp-test-bin-cmp.o
 openssl-3.0.4/fuzz/cmp-test-bin-fuzz_rand.d
 openssl-3.0.4/fuzz/cmp-test-bin-fuzz_rand.o
 openssl-3.0.4/fuzz/cmp-test-bin-test-corpus.d
-	openssl-3.0.4/fuzz/cmp-test-bin-test-corpus.o
+openssl-3.0.4/fuzz/cmp-test-bin-test-corpus.o
 openssl-3.0.4/fuzz/cms-test
 openssl-3.0.4/fuzz/cms-test-bin-cms.d
 openssl-3.0.4/fuzz/cms-test-bin-cms.o
