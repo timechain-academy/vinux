@@ -40,6 +40,7 @@ function setup_variables() {
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_C_COMPILER_WORKS=ON \
 		-DCMAKE_CXX_COMPILER_WORKS=ON \
+		-DCMAKE_POLICY_DEFAULT_CMP0026=NEW \
 		-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM)
 
 	case $PLATFORM in
@@ -98,9 +99,9 @@ function build_libpcre() {
 		-DPCRE_BUILD_TESTS=NO \
 		-DPCRE_SUPPORT_LIBBZ2=NO)
 
-	cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
+		cmake "${CMAKE_ARGS[@]}" .. 
 
-	cmake --build . --target install >/dev/null 2>/dev/null
+		cmake --build . --target install
 }
 
 ### Build openssl for a given platform
@@ -139,8 +140,8 @@ function build_openssl() {
 		--openssldir=$REPO_ROOT/install/$PLATFORM \
 		$TARGET_OS no-shared no-dso no-hw no-engine >/dev/null 2>/dev/null
 
-	make >/dev/null 2>/dev/null
-	make install_sw install_ssldirs >/dev/null 2>/dev/null
+	make 
+	make install_sw install_ssldirs
 	export -n CFLAGS
 }
 
@@ -173,7 +174,7 @@ function build_libgit2() {
 
     rm -rf libgit2-1.3.1
     test -f v1.3.1.zip || curl -LO -s https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
-    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./
+    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ >/dev/null 2>/dev/null
     cd libgit2-1.3.1
 
     rm -rf build && mkdir build && cd build
