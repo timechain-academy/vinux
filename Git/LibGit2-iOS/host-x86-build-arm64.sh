@@ -277,6 +277,21 @@ function build_libpcre() {
 
 # Build Clibgit2 XCFramework for use with SwiftGit2
 build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
-copy_modulemap libgit2
 zip -r libgit2.xcframework.zip -i libgit2.xcframework/
-rsync -r libgit2.xcframework/** ../libgit2.xcframework/
+rsync -avz \
+    --delete \
+    --force \
+    --progress \
+    libgit2.xcframework/** \
+    ../libgit2.xcframework/
+
+mkdir -p Clibgit2.xcframework
+
+rsync -avz \
+    --delete \
+    --force \
+    --progress \
+    libgit2.xcframework/** \
+    Clibgit2.xcframework/
+
+copy_modulemap libgit2
