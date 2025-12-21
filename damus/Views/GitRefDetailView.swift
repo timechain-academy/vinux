@@ -113,18 +113,19 @@ struct GitRefDetailView: View {
         print("Commit graph updated. Commits found: \(repo.commitGraph.commits.count)")
         
         if let commit = repo.commitGraph.commits.first(where: { $0.id.description == commitHash }) {
-            print("Commit found: \(commit.id.description)")
+            print("Commit found locally: \(commit.id.description)")
             self.commitDetails = CommitDetails(
                 message: commit.message,
                 author: commit.author.name,
                 date: commit.time
             )
         } else {
-            print("Commit with hash \(commitHash) not found locally.")
-            self.commitDetails = CommitDetails(message: "Commit not found locally. Fetching from remote...", author: "N/A", date: Date())
+            print("Commit with hash \(commitHash) not found locally. Attempting to fetch from remote...")
             let allRemotes = repo.getRemotes()
             if let remoteOrigin = allRemotes.first {
+                // Trigger fetch, then rely on onChange(of: repo.remoteProgress.inProgress) for update
                 repo.fetch(remoteOrigin)
+                self.commitDetails = CommitDetails(message: "Fetching commit from remote...", author: "N/A", date: Date())
             } else {
                 self.commitDetails = CommitDetails(message: "Commit not found and no remote to fetch from.", author: "N/A", date: Date())
             }
