@@ -65,6 +65,9 @@ struct GitRefDetailView: View {
             }
             .padding()
             .onAppear(perform: findCommit)
+            .onChange(of: isPresented) { newValue in
+                print("GitRefDetailView - isPresented changed to \(newValue)")
+            }
             .onChange(of: repo.remoteProgress.inProgress) { inProgress in
                 if !inProgress {
                     self.repo.updateCommitGraph()
@@ -85,6 +88,7 @@ struct GitRefDetailView: View {
             .overlay(
                 // Close button
                 Button(action: {
+                    print("Close button tapped.")
                     isPresented = false
                 }) {
                     Image(systemName: "xmark.circle.fill")
