@@ -13,7 +13,7 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 
 # List of platforms-architecture that we support
 # Note that there are limitations in `xcodebuild` command that disallows `maccatalyst` and `macosx` (native macOS lib) in the same xcframework.
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator-x86_64 iphonesimulator-arm64 maccatalyst-x86_64 maccatalyst-arm64) # macosx macosx-arm64
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator-arm64 maccatalyst-arm64) # macosx macosx-arm64
 
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
@@ -51,29 +51,15 @@ function setup_variables() {
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH \
 				-DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
-		"iphonesimulator-x86_64")
-			ARCH=x86_64
-			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
-
 		"iphonesimulator-arm64")
 			ARCH=arm64
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
-		"maccatalyst-x86_64")
-			ARCH=x86_64
-			SYSROOT=`xcodebuild -version -sdk macosx Path`
-			CMAKE_ARGS+=(-DCMAKE_C_FLAGS=-target\ $ARCH-apple-ios14.1-macabi);;
-
 		"maccatalyst-arm64")
 			ARCH=arm64
 			SYSROOT=`xcodebuild -version -sdk macosx Path`
 			CMAKE_ARGS+=(-DCMAKE_C_FLAGS=-target\ $ARCH-apple-ios14.1-macabi);;
-
-		"macosx")
-			ARCH=x86_64
-			SYSROOT=`xcodebuild -version -sdk macosx Path`;;
 
 		"macosx-arm64")
 			ARCH=arm64
@@ -121,11 +107,7 @@ function build_libpcre() {
 			"iphoneos")
 				TARGET_OS=ios64-cross
 				export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
-	
-			"iphonesimulator-x86_64")
-				TARGET_OS=darwin64-x86_64-cc # Use specific target for x86_64 simulator
-				export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
-	
+
 			"iphonesimulator-arm64")
 				TARGET_OS=darwin64-arm64-cc # Use specific target for arm64 simulator
 				export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
@@ -137,7 +119,7 @@ function build_libpcre() {
 			"macosx"|"macosx-arm64")
 				TARGET_OS=darwin64-$ARCH-cc
 				export CFLAGS="-isysroot $SYSROOT";;
-	
+
 			*)
 				echo "Unsupported or missing platform!";;
 		esac
