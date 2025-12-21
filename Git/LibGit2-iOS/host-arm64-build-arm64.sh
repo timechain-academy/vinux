@@ -13,7 +13,7 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 
 # List of platforms-architecture that we support
 # Note that there are limitations in `xcodebuild` command that disallows `maccatalyst` and `macosx` (native macOS lib) in the same xcframework.
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator-arm64 maccatalyst-arm64) # macosx macosx-arm64
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst) # macosx macosx-arm64
 
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
@@ -51,17 +51,17 @@ function setup_variables() {
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH \
 				-DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
-		"iphonesimulator-arm64")
+		"iphonesimulator")
 			ARCH=arm64
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
-		"maccatalyst-arm64")
+		"maccatalyst")
 			ARCH=arm64
 			SYSROOT=`xcodebuild -version -sdk macosx Path`
 			CMAKE_ARGS+=(-DCMAKE_C_FLAGS=-target\ $ARCH-apple-ios14.1-macabi);;
 
-		"macosx-arm64")
+		"macosx")
 			ARCH=arm64
 			SYSROOT=`xcodebuild -version -sdk macosx Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH);;
@@ -90,7 +90,7 @@ function build_libpcre() {
 
 		cmake "${CMAKE_ARGS[@]}" ..
 	
-		cmake --build . --target install
+		cmake --build . --target install -j8
 	}
 	
 	### Build openssl for a given platform
@@ -107,19 +107,19 @@ function build_libpcre() {
 			"iphoneos")
 				TARGET_OS=ios64-cross
 				export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
-	
-			"iphonesimulator-arm64")
+
+			"iphonesimulator")
 				TARGET_OS=darwin64-arm64-cc # Use specific target for arm64 simulator
 				export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
 	
-			"maccatalyst-x86_64"|"maccatalyst-arm64")
+			"maccatalyst"|"maccatalyst-arm64")
 				TARGET_OS=darwin64-$ARCH-cc
 				export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
 	
-			"macosx"|"macosx-arm64")
+			"macosx"|"macosx")
 				TARGET_OS=darwin64-$ARCH-cc
 				export CFLAGS="-isysroot $SYSROOT";;
-	
+
 			*)
 				echo "Unsupported or missing platform!";;
 		esac
@@ -154,7 +154,7 @@ function build_libpcre() {
 	
 		cmake "${CMAKE_ARGS[@]}" ..
 	
-		cmake --build . --target install
+		cmake --build . --target install -j8
 	}
 	
 	### Build libgit2 for a single platform (given as the first and only argument)
@@ -184,7 +184,7 @@ function build_libpcre() {
 	
 	    cmake "${CMAKE_ARGS[@]}" ..
 	
-	    cmake --build . --target install
+	    cmake --build . --target install -j8
 	}		
 		### Create xcframework for a given library
 		function build_xcframework() {
@@ -264,21 +264,19 @@ function build_libpcre() {
 		
 			# Merge all static libs as Clibgit2.a since xcodebuild doesn't allow specifying multiple .a
 			cd $REPO_ROOT/install/$p
-			libtool -static -o Clibgit2.a lib/*.a
-		    echo "Architectures for install/$p/Clibgit2.a (after libtool):"
-		    lipo -info Clibgit2.a
+			libtool -static -o libgit2.a lib/*.a
+		    echo "Architectures for install/$p/libgit2.a (after libtool):"
+		    lipo -info libgit2.a
 		done
 # Remove any explicit lipo commands that combine architectures prematurely.
 # xcodebuild -create-xcframework will handle combining compatible architectures for the same platform.
 
 # Build raw libgit2 XCFramework for Objective-C usage
-build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
-zip -r libgit2.xcframework.zip -i libgit2.xcframework/
+#build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
+#zip -r libgit2.xcframework.zip -i libgit2.xcframework/
 
 # Build Clibgit2 XCFramework for use with SwiftGit2
-build_xcframework Clibgit2 ${AVAILABLE_PLATFORMS[@]}
-copy_modulemap Clibgit2
-
-mkdir -p Clibgit2.xcframework
-zip -r Clibgit2.xcframework.zip -i Clibgit2.xcframework/
-rsync -r Clibgit2.xcframework/** ../libgit2.xcframework/
+build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
+copy_modulemap libgit2
+zip -r libgit2.xcframework.zip -i libgit2.xcframework/
+rsync -r libgit2.xcframework/** ../libgit2.xcframework/
