@@ -79,19 +79,20 @@ struct GitRefDetailView: View {
                     }
                 }
             }
-            #if os(macOS)
-            .keyboardShortcut(.escape, action: { isPresented = false })
+            #if os(macOS) || targetEnvironment(macCatalyst)
+            .keyboardShortcut(.escape)
             #endif
-
-            // Close button
-            Button(action: {
-                isPresented = false
-            }) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.gray)
-                    .padding(10)
-            }
+            .overlay(
+                // Close button
+                Button(action: {
+                    isPresented = false
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                        .padding(10)
+                }, alignment: .topTrailing
+            )
         }
     }
 
